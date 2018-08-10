@@ -1,37 +1,25 @@
-## Welcome to GitHub Pages
+---
+title: Welcome - Timothy Lock
+---
 
-You can use the [editor on GitHub](https://github.com/Timothylock/timothylock.github.io/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+# Welcome
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Who are you?
+I am enrolled in the Computer Science program at the [University of Toronto](https://www.utoronto.ca/).
 
-### Markdown
+I am currently working as an associate engineer at [Wattpad](https://company.wattpad.com/).
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+I am also a programming / robotics instructor at LogicFusion.
 
-```markdown
-Syntax highlighted code block
+I have been a part of University of Toronto Aerospace Team and recently as a division lead for over 3 years.
 
-# Header 1
-## Header 2
-### Header 3
+I have worked on many quirky hardware projects including a pancake printer and a WiiU controlled drone.
 
-- Bulleted
-- List
+## Examples or it didn't happen
+I write code and some idiotic comments about things I see.
 
-1. Numbered
-2. List
+I sometimes write [longer idiotic comments](https://blog.timothylock.ca) too.
 
-**Bold** and _Italic_ and `Code` text
+I made some cool projects as well.
 
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Timothylock/timothylock.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+I have a résumé if you're into that sort of thing.
