@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<article class="post">
+    <script>
+        var head = document.getElementsByTagName('head')[0];
+
+        var style = document.createElement('link');
+        style.href = "../assets/css/portfolio.css";
+        style.type = 'text/css';
+        style.rel = 'stylesheet';
+        head.append(style);
+    </script>
+
+    <header class="post-header">
+        <h1 class="post-title">{{ page.title | escape }}</h1>
+    </header>
+
+    <div class="post-content">
+        {{ content }}
+    </div>
+
+</article>
