@@ -4,4 +4,9 @@ title: Portfolio
 permalink: /portfolio/
 ---
 
-Follow my adventures as I dive deep into the world of computers
+Here are some projects that I have been proud of working on!
+
+|   sdsa	|   	|   dsa	|   	|   	|
+|   dsa	|   	|   	|   	|   	|
+|   	|   	|   	dsa|   	|   	|
+|   	|   	|   	|   	|   	|

@@ -8,25 +8,24 @@
   -webkit-box-shadow: -3px -23px 69px 18px #ABABAB;
   -moz-box-shadow: -3px -23px 69px 18px #ABABAB;
   -o-box-shadow: -3px -23px 69px 18px #ABABAB;
+  padding: 1px;
 
   // Positioning context for the mobile navigation icon
   position: relative;
 }
 
 .site-title {
-  @include relative-font-size(1.625);
-  font-weight: 300;
+  @include relative-font-size(2.2);
   line-height: $base-line-height * $base-font-size * 2.25;
+  text-decoration: none;
   letter-spacing: -1px;
   margin-bottom: 0;
   float: left;
-
-  // Fonts and stuff
   color: white;
 
   &,
   &:visited {
-    color: $grey-color-dark;
+    color: white;
   }
 }
 
@@ -42,9 +41,17 @@
     display: none;
   }
 
+  a:hover {
+    color: $site-blue-dark;
+  }
+
   .page-link {
-    color: $text-color;
+    @include relative-font-size(1.1);
+    color: white;
     line-height: $base-line-height;
+    height: 60px;
+    text-decoration: none;
+    transition: $transition-time;
 
     // Gaps between nav items, but not on the last one
     &:not(:last-child) {
@@ -110,7 +117,7 @@
  * Site footer
  */
 .site-footer {
-  background-color: $grey-color-dark;
+  background-color: $grey-color-light;
   border-top: 1px solid $grey-color-light;
   padding: $spacing-unit 0;
 }
@@ -124,6 +131,10 @@
 .social-media-list {
   list-style: none;
   margin-left: 0;
+
+  a:hover {
+    color: $site-blue;
+  }
 }
 
 .footer-col-wrapper {
@@ -180,6 +191,7 @@
  */
 .page-content {
   padding: $spacing-unit 0;
+  padding-top: $spacing-between-header-and-body;
   flex: 1;
   background: #efefef url('../img/ticks.png') repeat 0 0;
 }
@@ -230,6 +242,7 @@
 
 .post-content {
   margin-bottom: $spacing-unit;
+  font-weight: 300;
 
   h2 {
     @include relative-font-size(2);
@@ -237,6 +250,8 @@
     @include media-query($on-laptop) {
       @include relative-font-size(1.75);
     }
+
+    font-weight: 400;
   }
 
   h3 {
@@ -245,6 +260,8 @@
     @include media-query($on-laptop) {
       @include relative-font-size(1.375);
     }
+
+    font-weight: 400;
   }
 
   h4 {
@@ -253,5 +270,7 @@
     @include media-query($on-laptop) {
       @include relative-font-size(1.125);
     }
+
+    font-weight: 400;
   }
 }
