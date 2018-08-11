@@ -10,8 +10,11 @@
   -o-box-shadow: -3px -23px 69px 18px #ABABAB;
   padding: 1px;
 
-  // Positioning context for the mobile navigation icon
-  position: relative;
+  // Floating navbar
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  height: 60px;
 }
 
 .site-title {
