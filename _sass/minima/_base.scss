@@ -103,16 +103,16 @@ h1, h2, h3, h4, h5, h6 {
  * Links
  */
 a {
-  color: $site-blue;
+  color: $site-color;
   text-decoration: none;
   transition: $transition-time;
 
   &:visited {
-    color: $site-blue;
+    color: $site-color;
   }
 
   &:hover {
-    color: $site-blue-dark;
+    color: $site-color-dark;
     text-decoration: underline;
   }
 
