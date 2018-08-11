@@ -1,0 +1,42 @@
+---
+layout: post
+title: Goodbye Tim Pi Home Automation (Taking Home Automation To The Next Level)
+date: 2017-12-07 21:13:23.000000000 -05:00
+type: post
+published: true
+status: publish
+categories: []
+tags: []
+author: Timothy Lock
+---
+<p>If you have been following with my recent home automation adventures, you would realize that I essentially automated
+    everything through relays connected to my Raspberry Pi using the CAT5 cables in the wall as wiring to control other
+    parts of my home. Frankly, it was very hacky, messy, and hard to maintain. Any new feature I wanted required me to
+    code something new into the codebase and automation became a matter of hard-coding. It was simply not sustainable
+    and required too much maintenance.</p>
+<p>Lucky for me, Black Friday came along and with those came the sales. As home automation becomes more mainstream, the
+    prices go down. In fact, Google went crazy running promotions for their Google Home platform here in Toronto for the
+    past few months (making Alexa's debut in Canada just wash out in the noise). I managed to pick myself up some nice
+    things including a few <a href="http://www.tp-link.com/us/products/details/cat-5516_HS105.html">TPLink Smart WiFi
+        Plug minis</a>, <a href="http://www.belkin.com/us/p/P-F7C030/">Wemo Smart Light Switches</a>, a <a
+            href="https://store.google.com/product/google_home_mini">Google Home Mini</a>, and a <a
+            href="https://store.google.com/product/chromecast_2015">Google Chromecast</a>. The reason I chose these
+    specific smart devices was that I knew they connect to WiFi (without requiring a proprietary bridge) and that they
+    have documented/undocumented APIs that you can use to locally control them. They also play nice with Google Home so
+    if I was ever to get rid of my Pi Home Automation, they would still have a use (outside of their own apps).</p>
+<p>So here we are... we have all these new devices that somehow needs to get integrated into the home assistant.
+    Wouldn't it be cool of it could just detect these devices? How much coding would this take? Is it even worth it?
+    Patience and food supplies were running low at this point. All hope was getting lost..... then came <a
+            href="https://home-assistant.io/">Home Assistant</a>! It turns out that a bunch of people already created an
+    open-source platform which basically did what I done before - plus a lot more.</p>
+<p><a href="https://blog.blog.timothylock.ca/wp-content/uploads/2017/12/Screen-Shot-2017-12-07-at-4.06.36-PM.png"><img
+        class="aligncenter size-full wp-image-2954"
+        src="{{ site.baseurl }}/assets/Screen-Shot-2017-12-07-at-4.06.36-PM.png" alt="" width="2784" height="1610"/></a>
+</p>
+<p>&nbsp;</p>
+<p>The platform worked really well, discovering all of my smart home devices as well as android webcams with little
+    configuration required. To top it off, it still allowed me to use my GPIO pins (my DIY switches) as well as my door
+    sensors. A little bonus is that it discovered my Chromecast and Google Home out of the box with the ability to see
+    what is playing, send text for them to speak, and even control the media that is playing on it.</p>
+<p>I'm very excited to work with this platform and to take it to its limit. Once I get used to the platform code, I hope
+    to be able to contribute back to this project soon! Let's see how it goes.</p>

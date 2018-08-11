@@ -1,0 +1,27 @@
+---
+layout: post
+title: My First Game On Unity
+date: 2017-09-16 22:03:50.000000000 -04:00
+type: post
+published: true
+password: ''
+status: publish
+categories: []
+tags: []
+meta:
+  _edit_last: '1'
+  _wp_old_slug: placeholder-title
+author: Timothy Lock
+---
+<p>When can somebody really call a game finished? Is it when the character is able to move? What about having a storyline... is it done then? Or is it when you get tired. Game development seems to be a never-ending thing to me as there is always room for improvement - whether it be new features, bug fixes, or just adding more content. I suppose there is a point where the game becomes too bloating and the users are not happy anymore.</p>
+<p>Today I participated in a game jam where for 4 hours, I got the chance to work with 8 other great team members comprising of programmers and designers from UofT and Centennial College where we attempted to make this cool 4 hour game. During brainstorming, we thought about two things: witchcraft and exploding lightbulbs (all based on true stories done/performed by one of our team members). Attempting to keep this idea going, we tried brainstorming ideas of ways that we could make those two ideas work. Just as you were probably guessing, it didn't. Eventually, we settled on a free running style game where you smash light bulbs and at the same time, avoid obstacles. Think of it like <em>Temple Run</em>, except it is made by 9 students who know little to nothing about game design / Unity.</p>
+<p>For the first hour of programming, we hacked at it to start a GitHub repository with the Unity files in it. We knew that in order to make this work, we would have to also have one person create several shared objects such as the floor, walls, and player (since we would all be touching those objects and we would have a lot of merge conflicts otherwise). After that was done we all broke up into doing our individual parts (I was in charge of making the player move, jump, duck, etc). Throughout the process of making a player move, I learned about a lot of built-in Unity functions and properties such as <em>Input, Transform, </em><em>RigidBody</em> and much more. Making the character move and jump was not hard. Making the character rotate, stop when it hits a wall, and all that stuff were harder. Whats worst is that Git kept on having merge conflicts on the main Unity scene since we were all working on that. Due to that issue, the player code often broke because somebody didn't pay attention when dealing with the merge conflicts.</p>
+<p><a href="https://blog.blog.timothylock.ca/wp-content/uploads/2017/09/Screen-Shot-2017-09-16-at-5.53.21-PM.png"><img class="size-full wp-image-2944 aligncenter" src="{{ site.baseurl }}/assets/Screen-Shot-2017-09-16-at-5.53.21-PM.png" alt="" width="3360" height="1964" /></a></p>
+<p style="text-align: center;"><span style="color: #808080;"><em>Screenshot of our game during development</em></span></p>
+<p>We had an ambitious plan for our game- the player would start off in a hallway and objects would start appearing in their path and they would have to jump over them. If they were light bulbs, they should be able to run into them and explode the light bulb for points. To create a fun experience, the object locations would be generated at random so that there would not be the same pattern of objects (to a certain extent). The hallway also is never ending meaning that your score could only go up and you can only lose when you hit an object.</p>
+<p style="text-align: center;"><a href="https://blog.blog.timothylock.ca/wp-content/uploads/2017/09/Screen-Shot-2017-09-16-at-6.01.38-PM.png"><img class="aligncenter wp-image-2947" src="{{ site.baseurl }}/assets/Screen-Shot-2017-09-16-at-6.01.38-PM.png" alt="" width="224" height="331" /></a><span style="color: #808080;"><em>The child object that we forgot to put in</em></span></p>
+<p>One of the things that us programmers did not notice was that the designers did not know how to use Unity. That meant that when they were done with their model, they put it in our Unity project but nobody had the task of actually importing their model into the game (Hence the textureless tables and the weird white stick acting as a placeholder for the model). Unfortunately, when we realized this, it was already too late and all of the groups were presenting.</p>
+<p>If there was a lesson to take away from all of this, it would be that communication is key when working in a fast-paced team and that it is important to understand each person's strengths and weaknesses (plus game making is really hard).</p>
+<p style="text-align: left;">Overall, I really enjoyed this session and would definitely love to try this again with my amazing group again someday!</p>
+<p>&nbsp;</p>
+<p style="text-align: center;">Project Link: <a href="https://github.com/Timothylock/LightBulbRunner">https://github.com/Timothylock/LightBulbRunner</a></p>

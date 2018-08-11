@@ -1,0 +1,27 @@
+---
+layout: post
+title: Lights Control Update
+date: 2016-12-16 07:15:48.000000000 -05:00
+type: post
+published: true
+password: ''
+status: publish
+categories: []
+tags: []
+meta:
+  _edit_last: '1'
+  pblog_featured: 'no'
+author: Timothy Lock
+---
+<p>It has been a busy term, but it is finally coming to an end. That doesn't mean that I didn't get anything done in that time, though!</p>
+<p>I can finally say that a working addition has been added to my home monitoring system - light control. With this new update, I am able to control several lights in my house with the raspberry pi (which is already running the home monitoring system).</p>
+<p>In addition to this, I have used my new-found skills from CSC309 (web programming course) to completely rewrite the backend in nodejs. This is a significant improvement from the previous implementation which used python (with flask) as well as separate shell scripts, etc to serve the data to the clients (the control panels in this case). Because everything is integrated into the nodejs server and the fact that it is asynchronous, the overhead in the updating of sensor data is significantly reduced and allows for the web UI to refresh on shorter intervals (100ms compared to 500ms with 3 control panels) without bringing the Raspberry Pi to a grinding halt. It is worth noting that the front end did not change (as much).</p>
+<p>[caption id="attachment_2918" align="alignnone" width="4096"]<a href="http://timothylock.ca/blog/wp-content/uploads/2016/12/IMG_20161215_192110.jpg"><img class="size-full wp-image-2918" src="{{ site.baseurl }}/assets/IMG_20161215_192110.jpg" alt="Jpeg" width="4096" height="3072" /></a> The Light Control addition on the web control panel[/caption]</p>
+<p>[caption id="attachment_2917" align="alignnone" width="4096"]<a href="http://timothylock.ca/blog/wp-content/uploads/2016/12/IMG_20161215_192046.jpg"><img class="size-full wp-image-2917" src="{{ site.baseurl }}/assets/IMG_20161215_192046.jpg" alt="Jpeg" width="4096" height="3072" /></a> The existing main UI. Settings and History have still yet to be implemented[/caption]</p>
+<p>[caption id="attachment_2915" align="alignnone" width="4096"]<a href="http://timothylock.ca/blog/wp-content/uploads/2016/12/IMG_20161215_191640.jpg"><img class="size-full wp-image-2915" src="{{ site.baseurl }}/assets/IMG_20161215_191640.jpg" alt="Jpeg" width="4096" height="3072" /></a> An example of the light control in action[/caption]</p>
+<p>So now you're probably asking: "Tim, how did this work?"</p>
+<p>The answer is that this new update required an addition of a relay module to control the lights. Originally I intended to send commands through wifi to Arduinos which would then control relays at the destination. I did not have a WiFi module with me at that time so I decided to put the relay module in the same box as the Pi and send the 12V through CAT5 cables that are wired throughout the house (built into the walls). I did some searching on the internet and determined that this was a viable option and that the voltage drop would not affect my LED lights as much. I played it safe and used multiple lines in the CAT5 cable to transport the electricity for minimal resistance and thermal issues.</p>
+<p>[caption id="attachment_2916" align="alignnone" width="4096"]<a href="http://timothylock.ca/blog/wp-content/uploads/2016/12/IMG_20161215_191253.jpg"><img class="size-full wp-image-2916" src="{{ site.baseurl }}/assets/IMG_20161215_191253.jpg" alt="Jpeg" width="4096" height="3072" /></a> The system box. The circuit board on the top is the original alarm system board.[/caption]</p>
+<p>Overall, this change in backend and the update is holding well. Nothing has crashed or caught on fire so I am happy with this new modification! :)</p>
+<p>In the future, I have plans to integrate "presets/Profiles", webcam integration (its actually connected right now and can work on its own),  ftp, and anything else that comes to mind!</p>
+<p>Of course, the code can be found on my github <a href="https://github.com/Timothylock/Tim-Pi-Home-Monitoring">here</a>.</p>
