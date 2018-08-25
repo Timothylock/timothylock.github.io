@@ -9,7 +9,7 @@ title: Home
 #### Who are you?
 I am enrolled in the Computer Science program at the [University of Toronto](https://utoronto.ca).
 
-I am currently working as an associate engineer at [Wattpad](https://company.wattpad.com).
+I worked as an associate engineer at [Wattpad](https://company.wattpad.com).
 
 I am also a programming / robotics instructor at [LogicFusion](https://logicfusion.ca).
 
