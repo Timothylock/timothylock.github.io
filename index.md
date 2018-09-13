@@ -20,7 +20,7 @@ I have worked on many quirky hardware projects including a [pancake printer](/po
 #### Examples or it didn't happen
 I write code and some [idiotic comments](https://www.twitter.com/timothyklock) about things I see.
 
-I sometimes write [longer idiotic comments](/blog) too.
+I hear people telling me to blog it instead. [Done](/blog).
 
 I made some cool [projects](/portfolio) as well.
 
