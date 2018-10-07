@@ -29,7 +29,7 @@ Here are some projects that I have been proud of working on!
     <div class="content">
     <img src="../assets/images/portfolio/8thmarkham.png" alt="8th Markham Website Screenshot" style="width:100%">
       <h3>
-          <a href="https://8thmarkham.ca">8th Markham Website</a>
+          <a href="https://8thmarkham.com/">8th Markham Website</a>
       </h3>
       <p>A site designed and hosted for the 8th Markham Scouts Group. Uses Wordpress for scout leaders to post to the site.</p>
     </div>
