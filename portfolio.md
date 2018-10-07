@@ -56,11 +56,11 @@ Here are some projects that I have been proud of working on!
     </div>
     <div class="column">
       <div class="content">
-      <img src="../assets/images/portfolio/computerswithtim.png" alt="computers with tim screenshot" style="width:100%">
+      <img src="../assets/images/portfolio/inventory.png" alt="inventory system screenshot" style="width:100%">
         <h3>
-            <a href="http://computerswithtim.ml/">Computers With Tim</a>
+            <a href="https://inventorydemo.timothylock.ca/">Inventory Management System</a>
         </h3>
-        <p>A website made in Go for Tim's classes that he teaches. Includes an automarker for Python that provides instant insightful feedback..</p>
+        <p>An responsive inventory system made for personal use and for Univeristy of Toronto Aerospace Team. Features barcode scanners for quick actions. <a href="https://inventorydemo.timothylock.ca">Demo (user: demo, pass: demo)</a></p>
       </div>
     </div>
 </div>
