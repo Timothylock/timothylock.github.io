@@ -18,7 +18,7 @@ I have been a part of [University of Toronto Aerospace Team](https://utat.ca) an
 I have worked on many quirky hardware projects including a [pancake printer](/portfolio) and a [WiiU controlled drone](/portfolio).    
 
 #### Examples or it didn't happen
-I write code and some [idiotic comments](https://www.twitter.com/timothyklock) about things I see.
+I write [code](https://github.com/timothylock) and some [idiotic comments](https://www.twitter.com/timothyklock) about things I see.
 
 I hear people telling me to blog it instead. [Done](/blog).
 
