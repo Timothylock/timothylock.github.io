@@ -2,7 +2,6 @@
 layout: portfolio
 title: Status
 permalink: /status/
-exclude: true
 ---
 
 - [Datadog Statistics](https://p.datadoghq.com/sb/73bd0117e-7353de3dbe?tv_mode=true)
