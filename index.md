@@ -4,7 +4,6 @@
 
 layout: home
 title: Home
-menu: main
 ---
 
 #### Who are you?

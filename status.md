@@ -1,6 +1,5 @@
 ---
 layout: portfolio
-title: Status
 permalink: /status/
 ---
 

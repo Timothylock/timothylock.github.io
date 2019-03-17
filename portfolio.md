@@ -2,7 +2,6 @@
 layout: portfolio
 title: Portfolio
 permalink: /portfolio/
-menu: main
 ---
 
 Here are some projects that I have been proud of working on!
