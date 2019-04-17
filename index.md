@@ -11,11 +11,11 @@ I am enrolled in the Computer Science program at the [University of Toronto](htt
 
 I worked as an associate engineer at [Wattpad](https://company.wattpad.com).
 
-I am also a programming / robotics instructor at [LogicFusion](https://logicfusion.ca).
+I was a programming / robotics instructor at [LogicFusion](https://logicfusion.ca).
 
 I have been a part of [University of Toronto Aerospace Team](https://utat.ca) and recently as a division lead for over 3 years.
 
-I have worked on many quirky hardware projects including a [pancake printer](/portfolio) and a [WiiU controlled drone](/portfolio).    
+I have worked on many quirky projects including a [inventory system](/portfolio) and a [pancake printer](/portfolio).    
 
 #### Examples or it didn't happen
 I write [code](https://github.com/timothylock) and some [idiotic comments](https://www.twitter.com/timothyklock) about things I see.
