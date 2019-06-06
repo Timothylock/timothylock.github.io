@@ -8,7 +8,7 @@ title: Home
 
 #### Who are you?
 
-I worked as an associate engineer at [Wattpad](https://company.wattpad.com).
+I currently work as an associate engineer at [Wattpad](https://company.wattpad.com).
 
 I graduated from the Computer Science program at the [University of Toronto](https://utoronto.ca).
 
