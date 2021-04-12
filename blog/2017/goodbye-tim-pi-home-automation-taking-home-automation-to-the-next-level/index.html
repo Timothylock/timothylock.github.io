@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Goodbye Tim Pi Home Automation (Taking Home Automation To The Next Level)</title>
+<meta name="description" content="If you have been following with my recent home automation adventures, you would realize that I essentially automated    everything through relays connected t...">
+
+<link rel="stylesheet" href="/css/main.css">
+<link rel="canonical" href="https://timothylock.ca/blog/2017/goodbye-tim-pi-home-automation-taking-home-automation-to-the-next-level/">
+<link rel="alternate" type="application/rss+xml" title="Timothy Lock" href="https://timothylock.ca/feed.xml" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+</head>
+<body>
+  <header class="site-header">
+  <div class="container">
+    <input type="checkbox" id="toggleNavbar">
+    <h1 class="logo"><a href="/">Timothy Lock</a></h1>
+    <label for="toggleNavbar" role="button" class="toggle-navbar-button">
+      <i class="icon icon-menu"></i>
+      <i class="icon icon-cross"></i>
+    </label>
+    <nav class="navbar">
+      <ul>
+        <li><a href="/" title="Home">Home</a></li>
+        
+          <li><a href="/about" title="About">About</a></li>
+        
+          <li><a href="/blog" title="Blog">Blog</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+<main class="main-container">
+  <div class="container">
+    <article role="article" class="post">
+
+  <div class="card">
+    <header class="post-header">
+      <h1 class="post-title">Goodbye Tim Pi Home Automation (Taking Home Automation To The Next Level)</h1>
+      <em class="post-meta">
+        <time>Dec 7, 2017 • Timothy Lock</time>
+      </em>
+    </header>
+
+    <div class="post-content">
+      
+      <p>If you have been following with my recent home automation adventures, you would realize that I essentially automated
+    everything through relays connected to my Raspberry Pi using the CAT5 cables in the wall as wiring to control other
+    parts of my home. Frankly, it was very hacky, messy, and hard to maintain. Any new feature I wanted required me to
+    code something new into the codebase and automation became a matter of hard-coding. It was simply not sustainable
+    and required too much maintenance.</p>
+<p>Lucky for me, Black Friday came along and with those came the sales. As home automation becomes more mainstream, the
+    prices go down. In fact, Google went crazy running promotions for their Google Home platform here in Toronto for the
+    past few months (making Alexa's debut in Canada just wash out in the noise). I managed to pick myself up some nice
+    things including a few <a href="http://www.tp-link.com/us/products/details/cat-5516_HS105.html">TPLink Smart WiFi
+        Plug minis</a>, <a href="http://www.belkin.com/us/p/P-F7C030/">Wemo Smart Light Switches</a>, a <a
+            href="https://store.google.com/product/google_home_mini">Google Home Mini</a>, and a <a
+            href="https://store.google.com/product/chromecast_2015">Google Chromecast</a>. The reason I chose these
+    specific smart devices was that I knew they connect to WiFi (without requiring a proprietary bridge) and that they
+    have documented/undocumented APIs that you can use to locally control them. They also play nice with Google Home so
+    if I was ever to get rid of my Pi Home Automation, they would still have a use (outside of their own apps).</p>
+<p>So here we are... we have all these new devices that somehow needs to get integrated into the home assistant.
+    Wouldn't it be cool of it could just detect these devices? How much coding would this take? Is it even worth it?
+    Patience and food supplies were running low at this point. All hope was getting lost..... then came <a
+            href="https://home-assistant.io/">Home Assistant</a>! It turns out that a bunch of people already created an
+    open-source platform which basically did what I done before - plus a lot more.</p>
+<p><a href="/assets/images/blog_legacy_wordpress/uploads/2017/12/Screen-Shot-2017-12-07-at-4.06.36-PM.png"><img
+        class="aligncenter size-full wp-image-2954"
+        src="/assets/images/blog_legacy_wordpress/uploads/2017/12/Screen-Shot-2017-12-07-at-4.06.36-PM.png"
+        alt=""/></a>
+</p>
+<p>&nbsp;</p>
+<p>The platform worked really well, discovering all of my smart home devices as well as android webcams with little
+    configuration required. To top it off, it still allowed me to use my GPIO pins (my DIY switches) as well as my door
+    sensors. A little bonus is that it discovered my Chromecast and Google Home out of the box with the ability to see
+    what is playing, send text for them to speak, and even control the media that is playing on it.</p>
+<p>I'm very excited to work with this platform and to take it to its limit. Once I get used to the platform code, I hope
+    to be able to contribute back to this project soon! Let's see how it goes.</p>
+
+    </div>
+
+    
+
+  </div>
+
+</article>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <ul class="social">
+  <li><a href="https://github.com/timothylock" target="_blank"><i class="icon icon-github"></i></a></li>
+  <li><a href="https://www.instagram.com/itstimofee/" target="_blank"><i class="icon icon-instagram"></i></a></li>
+  <li><a href="https://linkedin.com/in/timothylock" target="_blank"><i class="icon icon-linkedin"></i></a></li>
+</ul>
+
+    <p class="txt-medium-gray">
+      <small>&copy;2021 All rights reserved. Made with ♥</small>
+    </p>
+  </div>
+</footer>
+
+
+</body>
+</html>

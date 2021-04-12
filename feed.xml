@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Timothy Lock</title>
+    <description>Timothy Lock Portfolio Software Developer</description>
+    <link>https://timothylock.ca/</link>
+    <atom:link href="https://timothylock.ca/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Mon, 12 Apr 2021 15:34:00 -0400</pubDate>
+    <lastBuildDate>Mon, 12 Apr 2021 15:34:00 -0400</lastBuildDate>
+    <generator>Jekyll v3.6.2</generator>
+    
+      <item>
+        <title>Reverse Engineering Zhone 6768-W1-NA via HTTP</title>
+        <description>&lt;h1 id=&quot;automating-configuration--status-checking-of-zhone-6768-w1-na-via-http&quot;&gt;Automating Configuration &amp;amp; Status Checking of Zhone 6768-W1-NA via HTTP&lt;/h1&gt;
+
+&lt;p&gt;Zhone 6768-W1-NA is a broadband gateway that has built-in wireless capabilities and can support VDSL2, ADSL2+, and 3G via USB. It comes with an administration page via the default gateway address of &lt;code&gt;192.168.1.1&lt;/code&gt; which is where this guide will focus on.&lt;/p&gt;
+
+&lt;h1 id=&quot;intro&quot;&gt;Intro&lt;/h1&gt;
+&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
+&lt;p&gt;The admin portal of the gateway can be found at &lt;code&gt;192.168.1.1&lt;/code&gt; and many actions can be performed by this portal. It is possible to capture and replay these requests.&lt;/p&gt;
+
+&lt;h2 id=&quot;tools-used-to-reverse-engineer&quot;&gt;Tools Used To Reverse Engineer&lt;/h2&gt;
+&lt;p&gt;These tools were used to reverse-engineer the device. In the interest of being adaptable, these tools will be mentioned minimally in the rest of the guide.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.getpostman.com/&quot;&gt;Postman&lt;/a&gt; - Used to easily capture and make HTTP requests&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://learning.getpostman.com/docs/postman/sending_api_requests/interceptor_extension/&quot;&gt;Postman Interceptor&lt;/a&gt; - Used to intercept the requests. &lt;strong&gt;NOTE: Only compatible with the Chrome version of Postman and &lt;em&gt;not&lt;/em&gt; the desktop app&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;security&quot;&gt;Security&lt;/h1&gt;
+&lt;h2 id=&quot;authentication&quot;&gt;Authentication&lt;a name=&quot;authentication&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The gateway uses &lt;a href=&quot;https://en.wikipedia.org/wiki/Basic_access_authentication&quot;&gt;BASIC&lt;/a&gt; authentication making it extremely easy to reproduce. Simply base64 encode the authentication and you are on your way. For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;header = &quot;Basic &quot; + b64encode(b&quot;username:password&quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;replacing &lt;code&gt;username&lt;/code&gt; with the gateway username and &lt;code&gt;password&lt;/code&gt; with the gateway password. The default users and passwords you can find by consulting the manual for the modem. If at any point the authentication information is incorrect, a &lt;a href=&quot;https://httpstatuses.com/401&quot;&gt;401&lt;/a&gt; will be returned.&lt;/p&gt;
+
+&lt;p&gt;An example with the username being &lt;code&gt;foo&lt;/code&gt; and the password being &lt;code&gt;bar&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;key: Authorization
+value: Basic Zm9vOmJhcg==
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;*&lt;em&gt;The algorithm for finding the default users and passwords for the gateway is omitted for security reasons&lt;/em&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;session-keys&quot;&gt;Session Keys&lt;a name=&quot;skey&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Session keys are used by the gateway to accompany any HTTP requests and are not reusable. They can be obtained by fetching the session key from the respective endpoints. Since they are not reusable, they must be fetched per request. For my research, I have discovered that you have to fetch the 2.4Ghz session key when trying to perform operations to the 2.4G WiFi network and likewise, a 5Ghz session key for 5G WiFi network operations. The endpoints to fetch this information is as follows:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2.4Ghz:&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;http://192.168.1.1/wlswitchinterface1.wl
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;5Ghz&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;http://192.168.1.1/wlswitchinterface0.wl
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Both of these endpoints require &lt;a href=&quot;#authentication&quot;&gt;the authentication header&lt;/a&gt;. Due to the fact that the modem never intended to be used this way, it sends back an entire HTML page and we must manually extract the key from the page. In order to get this variable-length session key, we must perform some hacky code to extract the key from the page which starts after &lt;code&gt;var sessionKey = '&lt;/code&gt;. In Python:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;start = data.index(&quot;var sessionKey = '&quot;) + 18
+end = data.index(&quot;'&quot;, start)
+
+session_key = data[start:end]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&quot;configuration&quot;&gt;Configuration&lt;/h1&gt;
+&lt;p&gt;For some reason, every operation on this gateway uses a GET request rather than a POST (&lt;a href=&quot;https://www.w3schools.com/tags/ref_httpmethods.asp&quot;&gt;it would make a lot more sense to be a POST&lt;/a&gt;). Using data captured by Postman, we can &lt;a href=&quot;https://learning.getpostman.com/docs/postman/sending_api_requests/capturing_http_requests/&quot;&gt;intercept/capture&lt;/a&gt; the requests to the gateway and modify the payload before replaying it back to the gateway. This guide will however not focus on how to capture the requests, but rather on their format and how to construct new ones to send to the modem&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;IMPORTANT: It is best to wait 10-15 seconds between operations as the gateway will return a 200 regardless of operation as long as the authentication is correct meaning if you send a command immediately after another, the second command may not run even though a 200 was returned&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;headers&quot;&gt;Headers&lt;/h2&gt;
+&lt;p&gt;Here is a sample header to send:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;headers = {
+    'upgrade-insecure-requests': &quot;1&quot;,
+    'user-agent': &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36&quot;,
+    'accept': &quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&quot;,
+    'referer': &quot;http://192.168.1.1/password.html&quot;,
+    'accept-encoding': &quot;gzip, deflate&quot;,
+    'accept-language': &quot;en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7&quot;,
+    'authorization': &quot;Basic &quot; + authToken,
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;with &lt;code&gt;authToken&lt;/code&gt; being &lt;a href=&quot;#authentication&quot;&gt;the authentication header&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;changing-wifi-settings&quot;&gt;Changing WiFi Settings&lt;/h2&gt;
+&lt;h3 id=&quot;wifi-basic-settings&quot;&gt;WiFi Basic Settings&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;url = &quot;http://192.168.1.1/wlcfg.wl?wlSsidIdx=0&amp;amp;wlEnableHspot=0&amp;amp;wlEnbl=1&amp;amp;wlHide=0&amp;amp;wlAPIsolation=1&amp;amp;wlSsid=&quot; + wifi2GSSID + &quot;&amp;amp;wlCountry=CA&amp;amp;wlRegRev=0&amp;amp;wlMaxAssoc=16&amp;amp;wlDisableWme=0&amp;amp;wlEnableWmf=1&amp;amp;wlEnbl_wl1v1=0&amp;amp;wlSsid_wl1v1=wl1_Guest1&amp;amp;wlHide_wl1v1=0&amp;amp;wlAPIsolation_wl1v1=0&amp;amp;wlDisableWme_wl1v1=0&amp;amp;wlEnableWmf_wl1v1=1&amp;amp;wlMaxAssoc_wl1v1=16&amp;amp;wlEnbl_wl1v2=0&amp;amp;wlSsid_wl1v2=wl1_Guest2&amp;amp;wlHide_wl1v2=0&amp;amp;wlAPIsolation_wl1v2=0&amp;amp;wlDisableWme_wl1v2=0&amp;amp;wlEnableWmf_wl1v2=1&amp;amp;wlMaxAssoc_wl1v2=16&amp;amp;wlEnbl_wl1v3=0&amp;amp;wlSsid_wl1v3=wl1_Guest3&amp;amp;wlHide_wl1v3=0&amp;amp;wlAPIsolation_wl1v3=0&amp;amp;wlDisableWme_wl1v3=0&amp;amp;wlEnableWmf_wl1v3=1&amp;amp;wlMaxAssoc_wl1v3=16&amp;amp;wlSyncNvram=1&amp;amp;sessionKey=&quot; + session_key
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To change the basic wifi settings, make a &lt;code&gt;GET&lt;/code&gt; request to &lt;code&gt;http://192.168.1.1/wlcfg.wl&lt;/code&gt; with the parameters outlined in the URL above. In the example above, we are only concerned with changing the SSID and turning on AP Isolation (hardcoded). You will notice that we must explicity specify each of the settings even though we aren’t changing them. The session key is either the &lt;a href=&quot;#skey&quot;&gt;2.4Ghz or 5Ghz session key&lt;/a&gt; depending on the band you want to configure.&lt;/p&gt;
+
+&lt;h3 id=&quot;wifi-security&quot;&gt;WiFi Security&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;url = &quot;http://192.168.1.1/wlsecurity.wl?wlWscMode=disabled&amp;amp;wlWscIRMode=enabled&amp;amp;wlWscAPMode=1&amp;amp;wlAuthMode=psk2&amp;amp;wlAuth=0&amp;amp;wlMFP=0&amp;amp;wlWpaPsk=&quot; + wifiPass + &quot;&amp;amp;wlWpaGtkRekey=0&amp;amp;wlNetReauth=36000&amp;amp;wlWep=disabled&amp;amp;wlWpa=aes&amp;amp;wlKeyBit=0&amp;amp;wlPreauth=0&amp;amp;wlSsidIdx=0&amp;amp;wlSyncNvram=1&amp;amp;sessionKey=&quot; + session_key
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To change the basic wifi settings, make a &lt;code&gt;GET&lt;/code&gt; request to &lt;code&gt;http://192.168.1.1/wlsecurity.wl&lt;/code&gt; with the parameters outlined in the URL above. In the example above, we are only concerned with changing the wifi network password and security type (hardcoded to &lt;code&gt;psk2&lt;/code&gt;). You will notice that we must explicity specify each of the settings even though we aren’t changing them. The session key is either the &lt;a href=&quot;#skey&quot;&gt;2.4Ghz or 5Ghz session key&lt;/a&gt; depending on the band you want to configure.&lt;/p&gt;
+
+&lt;h3 id=&quot;24ghz-wifi-advanced-settings&quot;&gt;2.4Ghz WiFi Advanced Settings&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;url = &quot;http://192.168.1.1/wlcfgadv.wl?wlChannel=0&amp;amp;wlNmode=auto&amp;amp;wlNReqd=0&amp;amp;wlBasicRate=default&amp;amp;wlFrgThrshld=2346&amp;amp;wlRtsThrshld=2347&amp;amp;wlDtmIntvl=1&amp;amp;wlBcnIntvl=100&amp;amp;wlGlobalMaxAssoc=32&amp;amp;wlFrameBurst=on&amp;amp;wlRifsAdvert=-1&amp;amp;wlObssCoex=0&amp;amp;wlRxChainPwrSaveEnable=1&amp;amp;wlRxChainPwrSaveQuietTime=10&amp;amp;wlRxChainPwrSavePps=10&amp;amp;wlBand=2&amp;amp;wlMCastRate=0&amp;amp;wlAfterBurnerEn=off&amp;amp;wlTxPwrPcnt=100&amp;amp;wlRegMode=0&amp;amp;wlNBwCap=1&amp;amp;wlNCtrlsb=0&amp;amp;wlNProtection=auto&amp;amp;wlNMcsidx=-1&amp;amp;wlWme=1&amp;amp;wlWmeNoAck=0&amp;amp;wlWmeApsd=1&amp;amp;wlMode=ap&amp;amp;wlEnableUre=0&amp;amp;wlStaRetryTime=10&amp;amp;bsdRole=0&amp;amp;bsdHelper=192.168.1.2&amp;amp;bsdHport=9877&amp;amp;bsdPrimary=192.168.1.1&amp;amp;bsdPport=9878&amp;amp;wlTafEnable=0&amp;amp;wlAtf=1&amp;amp;wlPspretendThreshold=0&amp;amp;wlPspretendRetryLimit=0&amp;amp;wlAcsFcsMode=0&amp;amp;wlAcsDfs=0&amp;amp;wlAcsCsScanTimer=900&amp;amp;wlAcsCiScanTimer=4&amp;amp;wlAcsCiScanTimeout=%5Bobject%20HTMLInputElement%5D&amp;amp;wlAcsScanEntryExpire=3600&amp;amp;wlAcsTxIdleCnt=0&amp;amp;wlAcsChanDwellTime=70&amp;amp;wlAcsChanFlopPeriod=70&amp;amp;wlIntferPeriod=1&amp;amp;wlIntferCnt=3&amp;amp;wlIntferTxfail=5&amp;amp;wlIntferTcptxfail=5&amp;amp;wlAcsDfsrImmediate=300%203&amp;amp;wlAcsDfsrDeferred=604800%205&amp;amp;wlAcsDfsrActivity=30%2010240&amp;amp;wlSyncNvram=1&amp;amp;sessionKey=&quot; + session_key_24_ghz
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To change the basic wifi advanced settings, make a &lt;code&gt;GET&lt;/code&gt; request to &lt;code&gt;http://192.168.1.1/wlcfgadv.wl&lt;/code&gt; with the parameters outlined in the URL above. In the example above, we are only concerned with changing the wifi band. You will notice that we must explicitly specify each of the settings even though we aren’t changing them. The session key is the &lt;a href=&quot;#skey&quot;&gt;2.4Ghz session key&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;5ghz-wifi-advanced-settings&quot;&gt;5Ghz WiFi Advanced Settings&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;url = &quot;http://192.168.1.1/wlcfgadv.wl?wlChannel=0&amp;amp;wlNmode=auto&amp;amp;wlNReqd=0&amp;amp;wlBasicRate=default&amp;amp;wlFrgThrshld=2346&amp;amp;wlRtsThrshld=2347&amp;amp;wlDtmIntvl=1&amp;amp;wlBcnIntvl=100&amp;amp;wlGlobalMaxAssoc=32&amp;amp;wlFrameBurst=on&amp;amp;wlRifsAdvert=-1&amp;amp;wlObssCoex=0&amp;amp;wlRxChainPwrSaveEnable=1&amp;amp;wlRxChainPwrSaveQuietTime=10&amp;amp;wlRxChainPwrSavePps=10&amp;amp;wlBand=1&amp;amp;wlMCastRate=0&amp;amp;wlAfterBurnerEn=off&amp;amp;wlTxPwrPcnt=100&amp;amp;wlRegMode=1&amp;amp;wlNBwCap=7&amp;amp;wlNProtection=auto&amp;amp;wlNMcsidx=-1&amp;amp;wlDfsPreIsm=-1&amp;amp;wlDfsPostIsm=-1&amp;amp;wlTpcDb=0&amp;amp;wlWme=1&amp;amp;wlWmeNoAck=0&amp;amp;wlWmeApsd=1&amp;amp;wlMode=ap&amp;amp;wlEnableUre=0&amp;amp;wlStaRetryTime=10&amp;amp;wlEnableBFR=0&amp;amp;wlEnableBFE=0&amp;amp;bsdRole=0&amp;amp;bsdHelper=192.168.1.2&amp;amp;bsdHport=9877&amp;amp;bsdPrimary=192.168.1.1&amp;amp;bsdPport=9878&amp;amp;wlTafEnable=0&amp;amp;wlAtf=1&amp;amp;wlPspretendThreshold=0&amp;amp;wlPspretendRetryLimit=0&amp;amp;wlAcsFcsMode=0&amp;amp;wlAcsDfs=0&amp;amp;wlAcsCsScanTimer=900&amp;amp;wlAcsCiScanTimer=4&amp;amp;wlAcsCiScanTimeout=%5Bobject%20HTMLInputElement%5D&amp;amp;wlAcsScanEntryExpire=3600&amp;amp;wlAcsTxIdleCnt=0&amp;amp;wlAcsChanDwellTime=70&amp;amp;wlAcsChanFlopPeriod=70&amp;amp;wlIntferPeriod=1&amp;amp;wlIntferCnt=3&amp;amp;wlIntferTxfail=5&amp;amp;wlIntferTcptxfail=5&amp;amp;wlAcsDfsrImmediate=300%203&amp;amp;wlAcsDfsrDeferred=604800%205&amp;amp;wlAcsDfsrActivity=30%2010240&amp;amp;wlSyncNvram=1&amp;amp;sessionKey=&quot; + session_key_5Ghz
+
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To change the basic wifi advanced settings, make a &lt;code&gt;GET&lt;/code&gt; request to &lt;code&gt;http://192.168.1.1/wlcfgadv.wl&lt;/code&gt; with the parameters outlined in the URL above. In the example above, we are only concerned with changing regulatory settings. You will notice that we must explicitly specify each of the settings even though we aren’t changing them. The session key is the &lt;a href=&quot;#skey&quot;&gt;5Ghz session key&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;changing-usernames-and-passwords&quot;&gt;Changing Usernames and Passwords&lt;/h2&gt;
+&lt;p&gt;If you are a sysadmin or ISP, you probably don’t want your users tinkering with these settings. Changing the usernames and passwords are as simple as making a &lt;code&gt;GET&lt;/code&gt; request to the following URL:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;&quot;http://192.168.1.1/password.cgi?inUserName=username&amp;amp;inPassword=&quot; + new_password + &quot;&amp;amp;inOrgPassword=&quot; + current_password + &quot;&amp;amp;sessionKey=&quot; + session_key
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;a href=&quot;#skey&quot;&gt;session key&lt;/a&gt; can be any 2.4Ghz or 5Ghz session key.&lt;/p&gt;
+
+&lt;h1 id=&quot;obtaining-information-from-gateway&quot;&gt;Obtaining Information From Gateway&lt;/h1&gt;
+&lt;p&gt;A lot of the basic information of the gateway can be obtained by &lt;code&gt;GET&lt;/code&gt;ing &lt;code&gt;http://192.168.1.1/info.html&lt;/code&gt; and parsing the response. For example, you can obtain the device serial number by parsing the response:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;var start = response.search('{6768-W1}-{')
+var end = start + 9
+var serialNumber = response.substring(start, end)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&quot;bugs&quot;&gt;Bugs&lt;/h1&gt;
+&lt;ul&gt;
+  &lt;li&gt;The modem interface eventually becomes unreachable remotely downstream but is still reachable from the clients when directly connected to the gateway’s ethernet ports or WiFi network. Therefore while these methods guarantee the modem is up, a lack of response from downstream does not guarantee that it is down.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;Hopefully, this document helps you in integrating configuration into your workflow. Happy hacking!&lt;/p&gt;
+</description>
+        <pubDate>Sat, 20 Apr 2019 18:39:10 -0400</pubDate>
+        <link>https://timothylock.ca/blog/2019/zhone-rev-eng/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2019/zhone-rev-eng/</guid>
+        
+        
+        <category>reverse-engineer</category>
+        
+      </item>
+    
+      <item>
+        <title>Migration To Github Pages</title>
+        <description>&lt;p&gt;Over the past week, I took up a new challenge to learn how to use GitHub Pages (which uses Jekyll). This was one of the
+first times that I have worked with a compiled website whereas previously I would rely on PHP to handle the theming, 
+generating the page, etc.&lt;/p&gt;
+
+&lt;p&gt;As a first time user/developer on Jekyll, I compiled a list of things that I really loved and some of which that I didn’t&lt;/p&gt;
+
+&lt;h2 id=&quot;good-things&quot;&gt;Good things&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Pages are automatically generated and theming can remain in one place&lt;/li&gt;
+  &lt;li&gt;Blog posts and pages can be written in markdown and generated into html pages&lt;/li&gt;
+  &lt;li&gt;My legacy blog posts from Wordpress were easily converted using Jekyll’s import feature&lt;/li&gt;
+  &lt;li&gt;Pages can still be written in HTML if you desire. All of my legacy posts are in HTML and almost indistinguishable from
+my new markdown pages&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;The overhead is a lot lower compared to PHP&lt;/em&gt;
+    &lt;ul&gt;
+      &lt;li&gt;benefit of having a site compiled to a static site rather than generated on the fly&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;I can host it on GitHub Pages 😎&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;bad-things&quot;&gt;Bad things&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Pages can’t be dynamically generated because its only generated once before the output is stored
+    &lt;ul&gt;
+      &lt;li&gt;only way around this is to use Javascript and change it client-side&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;The default theme I ended up changing did not include Bootstrap and adding it myself seems to break a lot of things.
+I’m not sure if I want to invest in putting it in if I don’t need it.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;By using this system, I essentially killed three birds with one stone (sped up my site, removed the Wordpress docker 
+pod from my server, and migrated all of this off my server). Hopefully this stays up and proves to be useful. I still 
+have the old pods up in my server and can switch back to it easily if I feel like I don’t like this new system.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 10 Aug 2018 18:39:10 -0400</pubDate>
+        <link>https://timothylock.ca/blog/2018/migration-to-github-pages/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2018/migration-to-github-pages/</guid>
+        
+        
+        <category>new</category>
+        
+        <category>website</category>
+        
+      </item>
+    
+      <item>
+        <title>Goodbye Tim Pi Home Automation (Taking Home Automation To The Next Level)</title>
+        <description>&lt;p&gt;If you have been following with my recent home automation adventures, you would realize that I essentially automated
+    everything through relays connected to my Raspberry Pi using the CAT5 cables in the wall as wiring to control other
+    parts of my home. Frankly, it was very hacky, messy, and hard to maintain. Any new feature I wanted required me to
+    code something new into the codebase and automation became a matter of hard-coding. It was simply not sustainable
+    and required too much maintenance.&lt;/p&gt;
+&lt;p&gt;Lucky for me, Black Friday came along and with those came the sales. As home automation becomes more mainstream, the
+    prices go down. In fact, Google went crazy running promotions for their Google Home platform here in Toronto for the
+    past few months (making Alexa's debut in Canada just wash out in the noise). I managed to pick myself up some nice
+    things including a few &lt;a href=&quot;http://www.tp-link.com/us/products/details/cat-5516_HS105.html&quot;&gt;TPLink Smart WiFi
+        Plug minis&lt;/a&gt;, &lt;a href=&quot;http://www.belkin.com/us/p/P-F7C030/&quot;&gt;Wemo Smart Light Switches&lt;/a&gt;, a &lt;a
+            href=&quot;https://store.google.com/product/google_home_mini&quot;&gt;Google Home Mini&lt;/a&gt;, and a &lt;a
+            href=&quot;https://store.google.com/product/chromecast_2015&quot;&gt;Google Chromecast&lt;/a&gt;. The reason I chose these
+    specific smart devices was that I knew they connect to WiFi (without requiring a proprietary bridge) and that they
+    have documented/undocumented APIs that you can use to locally control them. They also play nice with Google Home so
+    if I was ever to get rid of my Pi Home Automation, they would still have a use (outside of their own apps).&lt;/p&gt;
+&lt;p&gt;So here we are... we have all these new devices that somehow needs to get integrated into the home assistant.
+    Wouldn't it be cool of it could just detect these devices? How much coding would this take? Is it even worth it?
+    Patience and food supplies were running low at this point. All hope was getting lost..... then came &lt;a
+            href=&quot;https://home-assistant.io/&quot;&gt;Home Assistant&lt;/a&gt;! It turns out that a bunch of people already created an
+    open-source platform which basically did what I done before - plus a lot more.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2017/12/Screen-Shot-2017-12-07-at-4.06.36-PM.png&quot;&gt;&lt;img
+        class=&quot;aligncenter size-full wp-image-2954&quot;
+        src=&quot;/assets/images/blog_legacy_wordpress/uploads/2017/12/Screen-Shot-2017-12-07-at-4.06.36-PM.png&quot;
+        alt=&quot;&quot;/&gt;&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;The platform worked really well, discovering all of my smart home devices as well as android webcams with little
+    configuration required. To top it off, it still allowed me to use my GPIO pins (my DIY switches) as well as my door
+    sensors. A little bonus is that it discovered my Chromecast and Google Home out of the box with the ability to see
+    what is playing, send text for them to speak, and even control the media that is playing on it.&lt;/p&gt;
+&lt;p&gt;I'm very excited to work with this platform and to take it to its limit. Once I get used to the platform code, I hope
+    to be able to contribute back to this project soon! Let's see how it goes.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 07 Dec 2017 21:13:23 -0500</pubDate>
+        <link>https://timothylock.ca/blog/2017/goodbye-tim-pi-home-automation-taking-home-automation-to-the-next-level/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2017/goodbye-tim-pi-home-automation-taking-home-automation-to-the-next-level/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>My First Game On Unity</title>
+        <description>&lt;p&gt;When can somebody really call a game finished? Is it when the character is able to move? What about having a storyline... is it done then? Or is it when you get tired. Game development seems to be a never-ending thing to me as there is always room for improvement - whether it be new features, bug fixes, or just adding more content. I suppose there is a point where the game becomes too bloating and the users are not happy anymore.&lt;/p&gt;
+&lt;p&gt;Today I participated in a game jam where for 4 hours, I got the chance to work with 8 other great team members comprising of programmers and designers from UofT and Centennial College where we attempted to make this cool 4 hour game. During brainstorming, we thought about two things: witchcraft and exploding lightbulbs (all based on true stories done/performed by one of our team members). Attempting to keep this idea going, we tried brainstorming ideas of ways that we could make those two ideas work. Just as you were probably guessing, it didn't. Eventually, we settled on a free running style game where you smash light bulbs and at the same time, avoid obstacles. Think of it like &lt;em&gt;Temple Run&lt;/em&gt;, except it is made by 9 students who know little to nothing about game design / Unity.&lt;/p&gt;
+&lt;p&gt;For the first hour of programming, we hacked at it to start a GitHub repository with the Unity files in it. We knew that in order to make this work, we would have to also have one person create several shared objects such as the floor, walls, and player (since we would all be touching those objects and we would have a lot of merge conflicts otherwise). After that was done we all broke up into doing our individual parts (I was in charge of making the player move, jump, duck, etc). Throughout the process of making a player move, I learned about a lot of built-in Unity functions and properties such as &lt;em&gt;Input, Transform, &lt;/em&gt;&lt;em&gt;RigidBody&lt;/em&gt; and much more. Making the character move and jump was not hard. Making the character rotate, stop when it hits a wall, and all that stuff were harder. Whats worst is that Git kept on having merge conflicts on the main Unity scene since we were all working on that. Due to that issue, the player code often broke because somebody didn't pay attention when dealing with the merge conflicts.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;assets/images/blog_legacy_wordpress/uploads/2017/09/Screen-Shot-2017-09-16-at-5.53.21-PM.png&quot;&gt;&lt;img
+        class=&quot;size-full wp-image-2944 aligncenter&quot;
+        src=&quot;/assets/images/blog_legacy_wordpress/uploads/2017/09/Screen-Shot-2017-09-16-at-5.53.21-PM.png&quot; alt=&quot;&quot;/&gt;&lt;/a&gt;
+&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;color: #808080;&quot;&gt;&lt;em&gt;Screenshot of our game during development&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;We had an ambitious plan for our game- the player would start off in a hallway and objects would start appearing in their path and they would have to jump over them. If they were light bulbs, they should be able to run into them and explode the light bulb for points. To create a fun experience, the object locations would be generated at random so that there would not be the same pattern of objects (to a certain extent). The hallway also is never ending meaning that your score could only go up and you can only lose when you hit an object.&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a
+        href=&quot;assets/images/blog_legacy_wordpress/uploads/2017/09/Screen-Shot-2017-09-16-at-6.01.38-PM.png&quot;&gt;&lt;img
+        class=&quot;aligncenter wp-image-2947&quot;
+        src=&quot;/assets/images/blog_legacy_wordpress/uploads/2017/09/Screen-Shot-2017-09-16-at-6.01.38-PM.png&quot; alt=&quot;&quot;/&gt;&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;span style=&quot;color: #808080;&quot;&gt;&lt;em&gt;The child object that we forgot to put in&lt;/em&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;One of the things that us programmers did not notice was that the designers did not know how to use Unity. That meant that when they were done with their model, they put it in our Unity project but nobody had the task of actually importing their model into the game (Hence the textureless tables and the weird white stick acting as a placeholder for the model). Unfortunately, when we realized this, it was already too late and all of the groups were presenting.&lt;/p&gt;
+&lt;p&gt;If there was a lesson to take away from all of this, it would be that communication is key when working in a fast-paced team and that it is important to understand each person's strengths and weaknesses (plus game making is really hard).&lt;/p&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;Overall, I really enjoyed this session and would definitely love to try this again with my amazing group again someday!&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;Project Link: &lt;a href=&quot;https://github.com/Timothylock/LightBulbRunner&quot;&gt;https://github.com/Timothylock/LightBulbRunner&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 16 Sep 2017 22:03:50 -0400</pubDate>
+        <link>https://timothylock.ca/blog/2017/my-first-game-on-unity/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2017/my-first-game-on-unity/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Alexa, Open The Blinds (My Thoughts On Smart Homes)</title>
+        <description>&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2017/05/Untitled-1.jpg&quot;&gt;&lt;img class=&quot;size-full wp-image-2937 aligncenter&quot; style=&quot;margin-left: auto; margin-right: auto; display: block;&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2017/05/Untitled-1.jpg&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;em&gt;Have you seen one of these little pucks before?&lt;/em&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;The Echo Dot is a smart home device created by Amazon that is always listening and can be activated by saying &lt;strong&gt;&lt;em&gt;Alexa, Amazon, &lt;/em&gt;&lt;/strong&gt;or &lt;em&gt;&lt;strong&gt;Echo&lt;/strong&gt;&lt;/em&gt;. You know Google Smart Home or how you can go &quot;okay Google&quot; into your phone? Yeah, that's what this is. It is also coincidentally hard (non-existent) to find in Canada. When I headed down to the United States for vacation, I also snagged myself one of these cute devices for US$50. While it has the capability of performing a lot of actions already (such as controlling my Spotify, Phillips Hue, and checking my calendar, Amazon keeps coming out with new features every day.&lt;/p&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;The main reason that I picked up one of these is that Amazon allows developers to program their own commands into it. Eventually, I aim to create an extension that allows for the Echo Dot to make API calls to my Raspberry Pi (which if you have not been &lt;a href=&quot;https://blog.timothylock.ca/lights-control-update/&quot;&gt;following&lt;/a&gt; &lt;a href=&quot;https://github.com/Timothylock/Tim-Pi-Home-Monitoring&quot;&gt;recently&lt;/a&gt;) so that my DIY home automation system can be controlled by voice. In fact, I have been spending the past few months squashing bugs in the code as well as refactoring the server code so that I can create a cleaner and a more well-documented API.&lt;/p&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2017/05/alexa.png&quot;&gt;&lt;img class=&quot;size-full wp-image-2938 aligncenter&quot; style=&quot;margin-left: auto; margin-right: auto; display: block;&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2017/05/alexa.png&quot; alt=&quot;&quot; width=&quot;971&quot; height=&quot;423&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;One of the scary things that I noticed the Echo dot doing is saving the voice clips. I can open my app and it will not only show me my last command but also let me listen to it. This prompts me to talk about the next topic on my mind - how smart can a smart device be until they change from helpful to intrusive? Take your phone for example. Several phones have the ability to respond to &quot;okay Google&quot; or &quot;hey Galaxy&quot; while the device is sleeping. Knowing this, users may find it convenient to have a voice assistant that they do not have to wake their phone up to activate. What if I told you that Google tracks your location and you can even &lt;a href=&quot;https://www.google.ca/maps/timeline?pb&quot;&gt;view where you have been and what you have done a few years ago&lt;/a&gt;? Are you creeped out now? That is just only the tip of what we pay for convenience (and free!). That's fine and all, if you don't want your phone to listen to you, just put it far away or don't take it with you. The Echo, on the other hand, has 7 mics that can hear me talk quietly from another room. That's some powerful stuff. What if I was having some &quot;fun&quot; in another room and ... say I yell Alexa really loud (obviously not the assistant Alexa) and I forget to mute the device? I certainly don't need that being sent over the internet.&lt;/p&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;A quote to leave you with is this&lt;/p&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;
+&lt;blockquote&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&quot;I'm doing a free operating system just a hobby, won't be big and professional like gnu for 386 (486) AT clones.&quot;&lt;br /&gt;
+-Linus Torvalds&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;
+&lt;p style=&quot;text-align: left;&quot;&gt;Opening up software not only gets rid of fears, but it also creates an ecosystem that will thrive through contributions by everybody.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 04 May 2017 00:39:43 -0400</pubDate>
+        <link>https://timothylock.ca/blog/2017/alexa-open-the-blinds-my-thoughts-on-smart-homes/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2017/alexa-open-the-blinds-my-thoughts-on-smart-homes/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Lights Control Update</title>
+        <description>&lt;p&gt;It has been a busy term, but it is finally coming to an end. That doesn't mean that I didn't get anything done in that time, though!&lt;/p&gt;
+&lt;p&gt;I can finally say that a working addition has been added to my home monitoring system - light control. With this new update, I am able to control several lights in my house with the raspberry pi (which is already running the home monitoring system).&lt;/p&gt;
+&lt;p&gt;In addition to this, I have used my new-found skills from CSC309 (web programming course) to completely rewrite the backend in nodejs. This is a significant improvement from the previous implementation which used python (with flask) as well as separate shell scripts, etc to serve the data to the clients (the control panels in this case). Because everything is integrated into the nodejs server and the fact that it is asynchronous, the overhead in the updating of sensor data is significantly reduced and allows for the web UI to refresh on shorter intervals (100ms compared to 500ms with 3 control panels) without bringing the Raspberry Pi to a grinding halt. It is worth noting that the front end did not change (as much).&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_192110.jpg&quot;&gt;&lt;img
+        class=&quot;size-full wp-image-2918&quot;
+        src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_192110.jpg&quot; alt=&quot;Jpeg&quot;/&gt;&lt;/a&gt; The Light
+  Control addition on the web control panel&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_192046.jpg&quot;&gt;&lt;img
+        class=&quot;size-full wp-image-2917&quot;
+        src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_192046.jpg&quot; alt=&quot;Jpeg&quot;/&gt;&lt;/a&gt; The existing
+  main UI. Settings and History have still yet to be implemented&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_191640.jpg&quot;&gt;&lt;img
+        class=&quot;size-full wp-image-2915&quot;
+        src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_191640.jpg&quot; alt=&quot;Jpeg&quot;/&gt;&lt;/a&gt; An example
+  of the light control in action&lt;/p&gt;
+&lt;p&gt;So now you're probably asking: &quot;Tim, how did this work?&quot;&lt;/p&gt;
+&lt;p&gt;The answer is that this new update required an addition of a relay module to control the lights. Originally I intended to send commands through wifi to Arduinos which would then control relays at the destination. I did not have a WiFi module with me at that time so I decided to put the relay module in the same box as the Pi and send the 12V through CAT5 cables that are wired throughout the house (built into the walls). I did some searching on the internet and determined that this was a viable option and that the voltage drop would not affect my LED lights as much. I played it safe and used multiple lines in the CAT5 cable to transport the electricity for minimal resistance and thermal issues.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_191253.jpg&quot;&gt;&lt;img
+        class=&quot;size-full wp-image-2916&quot;
+        src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_191253.jpg&quot; alt=&quot;Jpeg&quot;/&gt;&lt;/a&gt; The system
+  box. The circuit board on the top is the original alarm system board.&lt;/p&gt;
+&lt;p&gt;Overall, this change in backend and the update is holding well. Nothing has crashed or caught on fire so I am happy with this new modification! :)&lt;/p&gt;
+&lt;p&gt;In the future, I have plans to integrate &quot;presets/Profiles&quot;, webcam integration (its actually connected right now and can work on its own),  ftp, and anything else that comes to mind!&lt;/p&gt;
+&lt;p&gt;Of course, the code can be found on my github &lt;a href=&quot;https://github.com/Timothylock/Tim-Pi-Home-Monitoring&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 16 Dec 2016 07:15:48 -0500</pubDate>
+        <link>https://timothylock.ca/blog/2016/lights-control-update/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2016/lights-control-update/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Upcoming Website</title>
+        <description>&lt;p&gt;Today, I finally decided to take up HTML, PHP, and CSS in order to create my own portfolio site from scratch. This was my original goal; but back then when my first site came online in 2010, I was just getting started in the programming world and had my priorities set on other languages. Now after 6 years, I am finally starting to achieve that dream.&lt;/p&gt;
+&lt;p&gt;My current plans for this site is as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The portfolio site will be completely remade from scratch and will not rely on any bootstrap designs or any CMS for that matter. This should definitely speed up loading times.&lt;/li&gt;
+&lt;li&gt;The current WordPress installation will be modified to only handle my blog posts (currently it handles everything on the site except for a few directories. This will also require me to develop a wordpress theme to match my &quot;new&quot; site exactly (for continuity of course!). Of course and alternative would be to just wrap wordpress in an iframe - we'll see.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You can follow the development at &lt;a href=&quot;http://timothylock.ca/testing&quot;&gt;timothylock.ca/testing&lt;/a&gt; as well as &lt;a href=&quot;https://github.com/Timothylock/TimothyWebsite&quot;&gt;https://github.com/Timothylock/TimothyWebsite&lt;/a&gt;&lt;/p&gt;
+&lt;h4&gt;08-01-16&lt;/h4&gt;
+&lt;p&gt;For the longest time, the CSS wasn't updating. I was uploading the file correctly but the site just didnt reflect the changes no matter what I made to the file (I even deleted all the code in the css file). Turns out that I forgot to enable Development Mode in cloudflare (who cached the css file). Awkward 15 minutes there.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/08/caching.png&quot;&gt;&lt;img class=&quot;alignnone size-full wp-image-2886&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/08/caching.png&quot; alt=&quot;caching&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;08-02-16&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Believe it or not, I am nearing the competition of the static site and am proud to say that the main website is FULLY HTML5 compliant!&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;08-09-16&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The first stage of the site is complete! I have rolled it out to replace the current site. I have temporarily removed access to the blog while I transfer the blog and prepare for the second stage.&lt;/p&gt;
+&lt;p&gt;Update: Blog re-enabled&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;08-11-16&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;It's done! The blog integrates itself nicely into the main site. There are just a few bugs left to squash, but it should be done in no time :)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;12-14-16&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;I just finished a web development course at my school and really dove deep into JQuery. I have fully implemented that on my site as well as cleaned up the js. In fact, the new js file has around 50% less lines than the old one!&lt;/p&gt;
+</description>
+        <pubDate>Tue, 02 Aug 2016 03:48:05 -0400</pubDate>
+        <link>https://timothylock.ca/blog/2016/upcoming-website/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2016/upcoming-website/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Ubuntu Linux on Lenovo ThinkPad T440P</title>
+        <description>&lt;p&gt;Let me firstly get this out there - I LOVE Linux. If it wasn't for MS Office not being on Linux (Yes I do know about Wine), I would have ditched Windows long ago in favour of Linux. Back then, I had quite the issue with my old ultrabook which was the Fujistsu UH554. It was headaches after headaches. First, its ALPS touchpad was not working until a &quot;dirty&quot; fix, the keyboard functions were mostly broken, battery life went down from 12 hours to 3 (horrendous I know), and constant hanging.&lt;/p&gt;
+&lt;p&gt;Enough about that, I recently purchased a second hand ThinkPad T440p (after trading in my &lt;del&gt;craptop&lt;/del&gt; ultrabook of course) and regrettably didn't purge its pour hard drive of Windows (since I was using it for work and they required Windows software). Today, I have finally decided to make the move and switch myself over to Ubuntu. My previous choice was Mint since I was familiar with Mintl; but I shortly changed my mind after the Wine compatibility of MS Office with Mint was only Gold while its compatibility with Ubuntu was Platinum.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;h1&gt;Installing&lt;/h1&gt;
+&lt;h2&gt;BIOS Configuration&lt;/h2&gt;
+&lt;p&gt;In the ThinkPad BIOS, UEFI/Legacy Boot was set to &lt;strong&gt;Both&lt;/strong&gt;. CSM Support was set to &lt;strong&gt;Yes&lt;/strong&gt;. Secure boot was also &lt;strong&gt;Disabled&lt;/strong&gt;. I haven't tried with any other combination as the USB booted right away using this configuration (that my previous Windows installation also used) so I didn't bother making any changes. &quot;If it ain't broke, don't fix it&quot; right?&lt;/p&gt;
+&lt;p&gt;If you don't know how to get into the BIOS, you can do so by mashing F10 during startup to get into the boot/options menu or mash enter to enter setup.&lt;/p&gt;
+&lt;h2&gt;Creating USB&lt;/h2&gt;
+&lt;p&gt;Since I was coming from Windows, I downloaded the Ubuntu 16.04 LTS &lt;a href=&quot;http://www.ubuntu.com/download&quot;&gt;image&lt;/a&gt; from their website and wrote it to my FAT32 formatted USB using UNetbootin (&lt;a href=&quot;https://unetbootin.github.io/&quot;&gt;download here&lt;/a&gt;) and selecting the iso image I just downloaded. A really straightforward process. I would recommend backing up the contents of your USB before you use the tool just in case it formats your USB.&lt;/p&gt;
+&lt;h2&gt;Booting From USB&lt;/h2&gt;
+&lt;p&gt;To boot from the USB, mash F10 right after you turn on your computer and select your drive&lt;/p&gt;
+&lt;p&gt;Installing Ubuntu was pretty straightforward and the hardware worked &lt;strong&gt;sufficiently&lt;/strong&gt; out of the box without me having to plug in a monitor, mouse, keyboard, etc. Granted, the drivers included &lt;em&gt;worked&lt;/em&gt;; but they did not &lt;em&gt;work well. &lt;/em&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/ubuntu.png&quot;&gt;&lt;img
+        class=&quot;alignnone size-full wp-image-2876&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/ubuntu.png&quot;
+        alt=&quot;ubuntu&quot;/&gt;&lt;/a&gt;&lt;em&gt;After installing, everything works out of the box&lt;br/&gt;
+&lt;/em&gt;&lt;/p&gt;
+&lt;h1&gt;Fixing Stuff&lt;/h1&gt;
+&lt;h2&gt;Trackpad Fix&lt;/h2&gt;
+&lt;p&gt;Sure sure the trackpad works out of the box, but I miss my natural scrolling (two fingers pushing up to scroll down) and was not going to settle with having to reverse my scrolling compared to IOS, Android, Windows, etc. This was an easy fix though! Just head to Settings -&amp;gt; Mouse &amp;amp; Trackpad and check Natural Scrolling.&lt;/p&gt;
+&lt;p&gt;As for the middle trackpoint scrolling, it is going to be a lot harder as I heard that the trackpoint uses a different driver compared to the trackpad. Unfortunately, nobody has figured out how to coordinate those two in Ubuntu. I will update this post when I find out!&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/natural.png&quot;&gt;&lt;img
+        class=&quot;size-full wp-image-2874 aligncenter&quot;
+        src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/natural.png&quot; alt=&quot;natural&quot;/&gt;&lt;/a&gt;&lt;a
+        href=&quot;http://Turning&quot;&gt;&lt;br/&gt;
+&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Turning on natural
+    scrolling is very easy&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;Battery Life Boost&lt;/h2&gt;
+&lt;p&gt;This one is not really a fix; but more of a tweak to boost my battery life (refer to my thoughts section for comparison). To do that, I installed TLP.&lt;/p&gt;
+&lt;pre&gt;[mk_blockquote style=&quot;quote-style&quot; font_family=&quot;none&quot; text_size=&quot;12&quot; align=&quot;left&quot;]
+sudo add-apt-repository ppa:linrunner/tlp
+sudo apt-get update&lt;/pre&gt;
+&lt;pre&gt;&lt;em&gt;sudo apt-get install tlp tlp-rdw&lt;/em&gt;
+sudo apt-get install tp-smapi-dkms acpi-call-dkms
+sudo tlp start
+
+&lt;/pre&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;After you are done, its set to go! No GUI to use or anything. It just runs in the
+    background and starts witht the computer.&lt;img class=&quot;size-full wp-image-2881 aligncenter&quot;
+                                                  src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/resulttlp.png&quot;
+                                                  alt=&quot;resulttlp&quot;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;This is what it should look like at the end of
+    the installation&lt;/em&gt;&lt;/p&gt;
+&lt;h2&gt;Cosmetic Fixes&lt;/h2&gt;
+&lt;p&gt;I personally like to make my installation look different than the stock settings. After all, its good to make you environment feel comfortable to you. Here are some of the things I did in no particular order&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Change the scale of the display. The Unity dock is already taking enough realestate as it is! I may be blind but I'm definitely not THAT blind that it need everything blown up in my face. I had the help of &lt;a href=&quot;https://apps.ubuntu.com/cat/applications/unity-tweak-tool/&quot;&gt;Unity Tweak Tool&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Change the theme. I don't like to stay as mainstream as stock theme, but I really like &lt;a href=&quot;https://numixproject.org/&quot;&gt;numix&lt;/a&gt; (even though it seems like everybody these days uses that). In my defense, I was on the wagon before it even started rolling!&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1&gt;My Thoughts - Compared To Windows&lt;/h1&gt;
+&lt;h2&gt;Battery Life&lt;/h2&gt;
+&lt;p&gt;The battery life seemed pretty decent compared to Windows. In Windows, I would score around 4-5 hours on Windows (keep in mind that my laptop came used) . On Ubuntu with TLP enabled, I would score around 4-6 hours (again, depending on what I am doing). Looking at this, it seems like the battery life actually &lt;strong&gt;increased&lt;/strong&gt; by installing Ubuntu. That was definitely a welcome surprise for me considering my old laptop's battery dropped from 12 hours to 3 hours when I made the switch to Linux.&lt;/p&gt;
+&lt;h2&gt;Compatibility&lt;/h2&gt;
+&lt;p&gt;Surprisingly, MS Office (via Wine by itself- not PlayOnLinux as in the first screenshot) performs extremely well and opens the documents correctly compared to last year when I tried it on Linux Mint. Unfortunately, there is not wireless display support as of yet (Intel WiDi, Miracast, etc) so I will have to switch back to Windows when I need that (sadly it means keeping Windows on my drive).&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 01 Aug 2016 19:57:46 -0400</pubDate>
+        <link>https://timothylock.ca/blog/2016/ubuntu-linux-on-lenovo-thinkpad-t440p/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2016/ubuntu-linux-on-lenovo-thinkpad-t440p/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>NewEgg Hybrid Centre Visit (Winning prizes!)</title>
+        <description>&lt;p&gt;Recently, I decided to visit NewEgg's Hybrid Centre opening at their Markham/Richmond Hill location with my friends. The day started off rough as the parking lot was full due to the amount of people that were there for the event. After finding a parking spot, we began to walk to the venue. There were several food trucks outside (which were free!) as well as a registration tent where we got a free bag and tshirts.&lt;/p&gt;
+&lt;p&gt;The real excitement actually started when we walked in. Man was the place gorgeous! To top it off, they were raffling prizes out too (such as cases + PSUs, RAM, SSDs, media center PCs, etc). Unfortunately, we came just a tad late to participate in that. We then headed to the VR section where we got to try out the HTC Vive in all of its VR glory. After playing with that, it made my Cardboard and the Oculus like a children's toy. I definitely enjoyed the VR concept and cannot wait to see where it goes in the future!&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/13735607_1107295142679133_3361078563021020716_o.jpg&quot;&gt;&lt;img class=&quot;alignnone size-full wp-image-2863&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/13735607_1107295142679133_3361078563021020716_o.jpg&quot; alt=&quot;13735607_1107295142679133_3361078563021020716_o&quot;/&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;em&gt;Photo taken by Dillon Rasiah (used with permission)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Later on, one of my friends and I signed up for a PC speed building challenge. Knowing that we both had experience building computers, we decided to take the challenge thinking that it should be fairly easy to compete in. Wrong. 5:09 was the record at that time. Who managed to build a computer in 5 minutes?! Regardless, we went in knowing that even if we don't win, we would go out with more experience (and being able to say that we built a computer with a nice GTX980 in it). The result was that I was unable to finish in 5:09 but I estimated based on my current progress that I would be finished in 5:45.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/13735164_1107294586012522_4984447833861179523_o.jpg&quot;&gt;&lt;img class=&quot;alignnone size-full wp-image-2864&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/13735164_1107294586012522_4984447833861179523_o.jpg&quot; alt=&quot;13735164_1107294586012522_4984447833861179523_o&quot;/&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;em&gt;Photo taken by Dillon Rasiah (used with permission)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/13723986_1107294526012528_7253990603011799388_o.jpg&quot;&gt;&lt;img class=&quot;alignnone size-full wp-image-2865&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/13723986_1107294526012528_7253990603011799388_o.jpg&quot; alt=&quot;13723986_1107294526012528_7253990603011799388_o&quot;/&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;em&gt;Photo taken by Dillon Rasiah (used with permission)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Not all was lost though. Turns out that they were handing out &lt;del&gt;pity&lt;/del&gt; participation prizes. I received an Actiontec Screenbeam Pro Business Edition from them and my friend received a snappy 64GB MicroSD card. What were they thinking by handing me a $200 participation prize? I have no idea - but I wasn't planning to find out as it was time for me to leave and head to work.&lt;/p&gt;
+&lt;p&gt;After arriving at my workplace, I decided that I wanted to implement this new WiDi device into my classroom and to give it a shot. Plugging it in, it just worked perfectly out of the box and I was able to get my computer connected to it in under 15 seconds. I have to say that throughout the class, this device allowed me to walk around with my laptop and to teach and assist my students a lot more efficiently as I did not have to keep walking back to my laptop (which is connected to the projector) to demo a concept. Instead, I was able to walk around with my laptop and demo concepts/questions to the class live on the spot without having to move around.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/P_20160716_105605_PN.jpg&quot;&gt;&lt;img class=&quot;alignnone size-full wp-image-2862&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/07/P_20160716_105605_PN.jpg&quot; alt=&quot;P_20160716_105605_PN&quot;/&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Overall, this day was well spent with all of the activities and the device which I see helping me with my lessons for the foreseeable future. I should definitely go to more of these events :-)&lt;/p&gt;
+</description>
+        <pubDate>Mon, 18 Jul 2016 12:57:55 -0400</pubDate>
+        <link>https://timothylock.ca/blog/2016/newegg-hybrid-centre-visit-winning-prizes/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2016/newegg-hybrid-centre-visit-winning-prizes/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>Adobe Premier Full CPU Discovery</title>
+        <description>&lt;p&gt;So today I was trying to encode a video that I recorded from my VCR. I started the encoding process and noticed that the encoding was taking a long time. In fact, it wasn't even moving. I decided to check the task manager and noticed that my CPU usage was lass than 30%. Something was clearly not working.&lt;/p&gt;
+&lt;p&gt;I did some research and found out that I had to press the &lt;strong&gt;queue&lt;/strong&gt; button INSTEAD of export. That would open up Adobe Media Encoder. Now it finally used 100% of the CPU. Perfect!&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/01/exportexample.jpg&quot; alt=&quot;&quot; /&gt;Source: &lt;a href=&quot;http://tdcat.com/2014/08/premiere-pro-cpu/&quot; target=&quot;_blank&quot;&gt;http://tdcat.com/2014/08/premiere-pro-cpu/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/01/adobemedia.png&quot;&gt;&lt;img class=&quot;alignnone size-large wp-image-2826&quot; src=&quot;/assets/images/blog_legacy_wordpress/uploads/2016/01/adobemedia.png&quot; alt=&quot;adobemedia&quot;/&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 01 Jan 2016 06:09:09 -0500</pubDate>
+        <link>https://timothylock.ca/blog/2016/adobe-premier-full-cpu-discovery/</link>
+        <guid isPermaLink="true">https://timothylock.ca/blog/2016/adobe-premier-full-cpu-discovery/</guid>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

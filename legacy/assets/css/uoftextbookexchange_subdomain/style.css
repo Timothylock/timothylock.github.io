@@ -1,0 +1,19 @@
+body {
+	background-color: #e5e5e5;
+	height: 100%;
+}
+
+th {
+	background-color: #0071a4;
+	color: #FFF;
+}
+
+tr:nth-child(even) {
+	background: #CCC;
+}
+
+tr:nth-child(odd) {
+	background: #FFF;
+}
+
+

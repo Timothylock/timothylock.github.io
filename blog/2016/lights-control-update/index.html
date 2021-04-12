@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Lights Control Update</title>
+<meta name="description" content="It has been a busy term, but it is finally coming to an end. That doesn't mean that I didn't get anything done in that time, though!I can finally say that a ...">
+
+<link rel="stylesheet" href="/css/main.css">
+<link rel="canonical" href="https://timothylock.ca/blog/2016/lights-control-update/">
+<link rel="alternate" type="application/rss+xml" title="Timothy Lock" href="https://timothylock.ca/feed.xml" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+</head>
+<body>
+  <header class="site-header">
+  <div class="container">
+    <input type="checkbox" id="toggleNavbar">
+    <h1 class="logo"><a href="/">Timothy Lock</a></h1>
+    <label for="toggleNavbar" role="button" class="toggle-navbar-button">
+      <i class="icon icon-menu"></i>
+      <i class="icon icon-cross"></i>
+    </label>
+    <nav class="navbar">
+      <ul>
+        <li><a href="/" title="Home">Home</a></li>
+        
+          <li><a href="/about" title="About">About</a></li>
+        
+          <li><a href="/blog" title="Blog">Blog</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+<main class="main-container">
+  <div class="container">
+    <article role="article" class="post">
+
+  <div class="card">
+    <header class="post-header">
+      <h1 class="post-title">Lights Control Update</h1>
+      <em class="post-meta">
+        <time>Dec 16, 2016 • Timothy Lock • {"_edit_last"=>"1", "pblog_featured"=>"no"}</time>
+      </em>
+    </header>
+
+    <div class="post-content">
+      
+      <p>It has been a busy term, but it is finally coming to an end. That doesn't mean that I didn't get anything done in that time, though!</p>
+<p>I can finally say that a working addition has been added to my home monitoring system - light control. With this new update, I am able to control several lights in my house with the raspberry pi (which is already running the home monitoring system).</p>
+<p>In addition to this, I have used my new-found skills from CSC309 (web programming course) to completely rewrite the backend in nodejs. This is a significant improvement from the previous implementation which used python (with flask) as well as separate shell scripts, etc to serve the data to the clients (the control panels in this case). Because everything is integrated into the nodejs server and the fact that it is asynchronous, the overhead in the updating of sensor data is significantly reduced and allows for the web UI to refresh on shorter intervals (100ms compared to 500ms with 3 control panels) without bringing the Raspberry Pi to a grinding halt. It is worth noting that the front end did not change (as much).</p>
+<p><a href="/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_192110.jpg"><img
+        class="size-full wp-image-2918"
+        src="/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_192110.jpg" alt="Jpeg"/></a> The Light
+  Control addition on the web control panel</p>
+<p><a href="/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_192046.jpg"><img
+        class="size-full wp-image-2917"
+        src="/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_192046.jpg" alt="Jpeg"/></a> The existing
+  main UI. Settings and History have still yet to be implemented</p>
+<p><a href="/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_191640.jpg"><img
+        class="size-full wp-image-2915"
+        src="/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_191640.jpg" alt="Jpeg"/></a> An example
+  of the light control in action</p>
+<p>So now you're probably asking: "Tim, how did this work?"</p>
+<p>The answer is that this new update required an addition of a relay module to control the lights. Originally I intended to send commands through wifi to Arduinos which would then control relays at the destination. I did not have a WiFi module with me at that time so I decided to put the relay module in the same box as the Pi and send the 12V through CAT5 cables that are wired throughout the house (built into the walls). I did some searching on the internet and determined that this was a viable option and that the voltage drop would not affect my LED lights as much. I played it safe and used multiple lines in the CAT5 cable to transport the electricity for minimal resistance and thermal issues.</p>
+<p><a href="/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_191253.jpg"><img
+        class="size-full wp-image-2916"
+        src="/assets/images/blog_legacy_wordpress/uploads/2016/12/IMG_20161215_191253.jpg" alt="Jpeg"/></a> The system
+  box. The circuit board on the top is the original alarm system board.</p>
+<p>Overall, this change in backend and the update is holding well. Nothing has crashed or caught on fire so I am happy with this new modification! :)</p>
+<p>In the future, I have plans to integrate "presets/Profiles", webcam integration (its actually connected right now and can work on its own),  ftp, and anything else that comes to mind!</p>
+<p>Of course, the code can be found on my github <a href="https://github.com/Timothylock/Tim-Pi-Home-Monitoring">here</a>.</p>
+
+    </div>
+
+    
+
+  </div>
+
+</article>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <ul class="social">
+  <li><a href="https://github.com/timothylock" target="_blank"><i class="icon icon-github"></i></a></li>
+  <li><a href="https://www.instagram.com/itstimofee/" target="_blank"><i class="icon icon-instagram"></i></a></li>
+  <li><a href="https://linkedin.com/in/timothylock" target="_blank"><i class="icon icon-linkedin"></i></a></li>
+</ul>
+
+    <p class="txt-medium-gray">
+      <small>&copy;2021 All rights reserved. Made with ♥</small>
+    </p>
+  </div>
+</footer>
+
+
+</body>
+</html>

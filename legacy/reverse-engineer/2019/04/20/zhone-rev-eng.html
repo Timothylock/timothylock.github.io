@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="../../../../cdn-cgi/apps/head/dSksaVosMELQb4YzQNhjVUxOTuE.js"></script><link rel="shortcut icon" type="image/x-icon" href="../../../../favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Reverse Engineering Zhone 6768-W1-NA via HTTP | Timothy Lock</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Reverse Engineering Zhone 6768-W1-NA via HTTP" />
+<meta name="author" content="Timothy Lock" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Automating Configuration &amp; Status Checking of Zhone 6768-W1-NA via HTTP" />
+<meta property="og:description" content="Automating Configuration &amp; Status Checking of Zhone 6768-W1-NA via HTTP" />
+<link rel="canonical" href="https://timothylock.ca/reverse-engineer/2019/04/20/zhone-rev-eng.html" />
+<meta property="og:url" content="https://timothylock.ca/reverse-engineer/2019/04/20/zhone-rev-eng.html" />
+<meta property="og:site_name" content="Timothy Lock" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-04-20T22:39:10+00:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","dateModified":"2019-04-20T22:39:10+00:00","datePublished":"2019-04-20T22:39:10+00:00","headline":"Reverse Engineering Zhone 6768-W1-NA via HTTP","mainEntityOfPage":{"@type":"WebPage","@id":"https://timothylock.ca/reverse-engineer/2019/04/20/zhone-rev-eng.html"},"url":"https://timothylock.ca/reverse-engineer/2019/04/20/zhone-rev-eng.html","author":{"@type":"Person","name":"Timothy Lock"},"description":"Automating Configuration & Status Checking of Zhone 6768-W1-NA via HTTP","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="../../../../assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://timothylock.ca/feed.xml" title="Timothy Lock" /></head>
+<body><header class="site-header" role="banner">
+  <div class="wrapper"><a class="site-title" rel="author" href="../../../../index.html">Timothy Lock</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+        <div class="trigger"><a class="page-link" href="../../../../index.html">Home</a><a class="page-link" href="../../../../portfolio.html">Portfolio</a><a class="page-link" href="../../../../blog.html">Blog</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Reverse Engineering Zhone 6768-W1-NA via HTTP</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-04-20T22:39:10+00:00" itemprop="datePublished">Apr 20, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Timothy Lock</span></span></p>
+  </header>
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="automating-configuration--status-checking-of-zhone-6768-w1-na-via-http">Automating Configuration & Status Checking of Zhone 6768-W1-NA via HTTP</h1>
+<p>Zhone 6768-W1-NA is a broadband gateway that has built-in wireless capabilities and can support VDSL2, ADSL2+, and 3G via USB. It comes with an administration page via the default gateway address of <code class="highlighter-rouge">192.168.1.1</code> which is where this guide will focus on.</p>
+<h1 id="intro">Intro</h1>
+<h2 id="background">Background</h2>
+<p>The admin portal of the gateway can be found at <code class="highlighter-rouge">192.168.1.1</code> and many actions can be performed by this portal. It is possible to capture and replay these requests.</p>
+<h2 id="tools-used-to-reverse-engineer">Tools Used To Reverse Engineer</h2>
+<p>These tools were used to reverse-engineer the device. In the interest of being adaptable, these tools will be mentioned minimally in the rest of the guide.</p>
+<ul>
+  <li><a href="https://www.getpostman.com/">Postman</a> - Used to easily capture and make HTTP requests</li>
+  <li><a href="https://learning.getpostman.com/docs/postman/sending_api_requests/interceptor_extension/">Postman Interceptor</a> - Used to intercept the requests. <strong>NOTE: Only compatible with the Chrome version of Postman and <em>not</em> the desktop app</strong></li>
+</ul>
+<h1 id="security">Security</h1>
+<h2 id="authentication">Authentication<a name="authentication"></a></h2>
+<p>The gateway uses <a href="https://en.wikipedia.org/wiki/Basic_access_authentication">BASIC</a> authentication making it extremely easy to reproduce. Simply base64 encode the authentication and you are on your way. For example:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">header</span> <span class="o">=</span> <span class="s">"Basic "</span> <span class="o">+</span> <span class="n">b64encode</span><span class="p">(</span><span class="n">b</span><span class="s">"username:password"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>replacing <code class="highlighter-rouge">username</code> with the gateway username and <code class="highlighter-rouge">password</code> with the gateway password. The default users and passwords you can find by consulting the manual for the modem. If at any point the authentication information is incorrect, a <a href="https://httpstatuses.com/401">401</a> will be returned.</p>
+<p>An example with the username being <code class="highlighter-rouge">foo</code> and the password being <code class="highlighter-rouge">bar</code>:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>key: Authorization
+value: Basic Zm9vOmJhcg==
+</code></pre></div></div>
+<p>*<em>The algorithm for finding the default users and passwords for the gateway is omitted for security reasons</em></p>
+<h2 id="session-keys">Session Keys<a name="skey"></a></h2>
+<p>Session keys are used by the gateway to accompany any HTTP requests and are not reusable. They can be obtained by fetching the session key from the respective endpoints. Since they are not reusable, they must be fetched per request. For my research, I have discovered that you have to fetch the 2.4Ghz session key when trying to perform operations to the 2.4G WiFi network and likewise, a 5Ghz session key for 5G WiFi network operations. The endpoints to fetch this information is as follows:</p>
+<p><strong>2.4Ghz:</strong></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://192.168.1.1/wlswitchinterface1.wl
+</code></pre></div></div>
+<p><strong>5Ghz</strong></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>http://192.168.1.1/wlswitchinterface0.wl
+</code></pre></div></div>
+<p>Both of these endpoints require <a href="#authentication">the authentication header</a>. Due to the fact that the modem never intended to be used this way, it sends back an entire HTML page and we must manually extract the key from the page. In order to get this variable-length session key, we must perform some hacky code to extract the key from the page which starts after <code class="highlighter-rouge">var sessionKey = '</code>. In Python:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">start</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">"var sessionKey = '"</span><span class="p">)</span> <span class="o">+</span> <span class="mi">18</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">"'"</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+<span class="n">session_key</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+</code></pre></div></div>
+<h1 id="configuration">Configuration</h1>
+<p>For some reason, every operation on this gateway uses a GET request rather than a POST (<a href="https://www.w3schools.com/tags/ref_httpmethods.asp">it would make a lot more sense to be a POST</a>). Using data captured by Postman, we can <a href="https://learning.getpostman.com/docs/postman/sending_api_requests/capturing_http_requests/">intercept/capture</a> the requests to the gateway and modify the payload before replaying it back to the gateway. This guide will however not focus on how to capture the requests, but rather on their format and how to construct new ones to send to the modem</p>
+<p><strong>IMPORTANT: It is best to wait 10-15 seconds between operations as the gateway will return a 200 regardless of operation as long as the authentication is correct meaning if you send a command immediately after another, the second command may not run even though a 200 was returned</strong></p>
+<h2 id="headers">Headers</h2>
+<p>Here is a sample header to send:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'upgrade-insecure-requests'</span><span class="p">:</span> <span class="s">"1"</span><span class="p">,</span>
+    <span class="s">'user-agent'</span><span class="p">:</span> <span class="s">"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"</span><span class="p">,</span>
+    <span class="s">'accept'</span><span class="p">:</span> <span class="s">"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"</span><span class="p">,</span>
+    <span class="s">'referer'</span><span class="p">:</span> <span class="s">"http://192.168.1.1/password.html"</span><span class="p">,</span>
+    <span class="s">'accept-encoding'</span><span class="p">:</span> <span class="s">"gzip, deflate"</span><span class="p">,</span>
+    <span class="s">'accept-language'</span><span class="p">:</span> <span class="s">"en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"</span><span class="p">,</span>
+    <span class="s">'authorization'</span><span class="p">:</span> <span class="s">"Basic "</span> <span class="o">+</span> <span class="n">authToken</span><span class="p">,</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+<p>with <code class="highlighter-rouge">authToken</code> being <a href="#authentication">the authentication header</a>.</p>
+<h2 id="changing-wifi-settings">Changing WiFi Settings</h2>
+<h3 id="wifi-basic-settings">WiFi Basic Settings</h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">url</span> <span class="o">=</span> <span class="s">"http://192.168.1.1/wlcfg.wl?wlSsidIdx=0&wlEnableHspot=0&wlEnbl=1&wlHide=0&wlAPIsolation=1&wlSsid="</span> <span class="o">+</span> <span class="n">wifi2GSSID</span> <span class="o">+</span> <span class="s">"&wlCountry=CA&wlRegRev=0&wlMaxAssoc=16&wlDisableWme=0&wlEnableWmf=1&wlEnbl_wl1v1=0&wlSsid_wl1v1=wl1_Guest1&wlHide_wl1v1=0&wlAPIsolation_wl1v1=0&wlDisableWme_wl1v1=0&wlEnableWmf_wl1v1=1&wlMaxAssoc_wl1v1=16&wlEnbl_wl1v2=0&wlSsid_wl1v2=wl1_Guest2&wlHide_wl1v2=0&wlAPIsolation_wl1v2=0&wlDisableWme_wl1v2=0&wlEnableWmf_wl1v2=1&wlMaxAssoc_wl1v2=16&wlEnbl_wl1v3=0&wlSsid_wl1v3=wl1_Guest3&wlHide_wl1v3=0&wlAPIsolation_wl1v3=0&wlDisableWme_wl1v3=0&wlEnableWmf_wl1v3=1&wlMaxAssoc_wl1v3=16&wlSyncNvram=1&sessionKey="</span> <span class="o">+</span> <span class="n">session_key</span>
+</code></pre></div></div>
+<p>To change the basic wifi settings, make a <code class="highlighter-rouge">GET</code> request to <code class="highlighter-rouge">http://192.168.1.1/wlcfg.wl</code> with the parameters outlined in the URL above. In the example above, we are only concerned with changing the SSID and turning on AP Isolation (hardcoded). You will notice that we must explicity specify each of the settings even though we aren’t changing them. The session key is either the <a href="#skey">2.4Ghz or 5Ghz session key</a> depending on the band you want to configure.</p>
+<h3 id="wifi-security">WiFi Security</h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">url</span> <span class="o">=</span> <span class="s">"http://192.168.1.1/wlsecurity.wl?wlWscMode=disabled&wlWscIRMode=enabled&wlWscAPMode=1&wlAuthMode=psk2&wlAuth=0&wlMFP=0&wlWpaPsk="</span> <span class="o">+</span> <span class="n">wifiPass</span> <span class="o">+</span> <span class="s">"&wlWpaGtkRekey=0&wlNetReauth=36000&wlWep=disabled&wlWpa=aes&wlKeyBit=0&wlPreauth=0&wlSsidIdx=0&wlSyncNvram=1&sessionKey="</span> <span class="o">+</span> <span class="n">session_key</span>
+</code></pre></div></div>
+<p>To change the basic wifi settings, make a <code class="highlighter-rouge">GET</code> request to <code class="highlighter-rouge">http://192.168.1.1/wlsecurity.wl</code> with the parameters outlined in the URL above. In the example above, we are only concerned with changing the wifi network password and security type (hardcoded to <code class="highlighter-rouge">psk2</code>). You will notice that we must explicity specify each of the settings even though we aren’t changing them. The session key is either the <a href="#skey">2.4Ghz or 5Ghz session key</a> depending on the band you want to configure.</p>
+<h3 id="24ghz-wifi-advanced-settings">2.4Ghz WiFi Advanced Settings</h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">url</span> <span class="o">=</span> <span class="s">"http://192.168.1.1/wlcfgadv.wl?wlChannel=0&wlNmode=auto&wlNReqd=0&wlBasicRate=default&wlFrgThrshld=2346&wlRtsThrshld=2347&wlDtmIntvl=1&wlBcnIntvl=100&wlGlobalMaxAssoc=32&wlFrameBurst=on&wlRifsAdvert=-1&wlObssCoex=0&wlRxChainPwrSaveEnable=1&wlRxChainPwrSaveQuietTime=10&wlRxChainPwrSavePps=10&wlBand=2&wlMCastRate=0&wlAfterBurnerEn=off&wlTxPwrPcnt=100&wlRegMode=0&wlNBwCap=1&wlNCtrlsb=0&wlNProtection=auto&wlNMcsidx=-1&wlWme=1&wlWmeNoAck=0&wlWmeApsd=1&wlMode=ap&wlEnableUre=0&wlStaRetryTime=10&bsdRole=0&bsdHelper=192.168.1.2&bsdHport=9877&bsdPrimary=192.168.1.1&bsdPport=9878&wlTafEnable=0&wlAtf=1&wlPspretendThreshold=0&wlPspretendRetryLimit=0&wlAcsFcsMode=0&wlAcsDfs=0&wlAcsCsScanTimer=900&wlAcsCiScanTimer=4&wlAcsCiScanTimeout=</span><span class="si">%5</span><span class="s">Bobject</span><span class="si">%20</span><span class="s">HTMLInputElement</span><span class="si">%5</span><span class="s">D&wlAcsScanEntryExpire=3600&wlAcsTxIdleCnt=0&wlAcsChanDwellTime=70&wlAcsChanFlopPeriod=70&wlIntferPeriod=1&wlIntferCnt=3&wlIntferTxfail=5&wlIntferTcptxfail=5&wlAcsDfsrImmediate=300</span><span class="si">%203</span><span class="s">&wlAcsDfsrDeferred=604800</span><span class="si">%205</span><span class="s">&wlAcsDfsrActivity=30</span><span class="si">%2010240</span><span class="s">&wlSyncNvram=1&sessionKey="</span> <span class="o">+</span> <span class="n">session_key_24_ghz</span>
+</code></pre></div></div>
+<p>To change the basic wifi advanced settings, make a <code class="highlighter-rouge">GET</code> request to <code class="highlighter-rouge">http://192.168.1.1/wlcfgadv.wl</code> with the parameters outlined in the URL above. In the example above, we are only concerned with changing the wifi band. You will notice that we must explicitly specify each of the settings even though we aren’t changing them. The session key is the <a href="#skey">2.4Ghz session key</a>.</p>
+<h3 id="5ghz-wifi-advanced-settings">5Ghz WiFi Advanced Settings</h3>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">url</span> <span class="o">=</span> <span class="s">"http://192.168.1.1/wlcfgadv.wl?wlChannel=0&wlNmode=auto&wlNReqd=0&wlBasicRate=default&wlFrgThrshld=2346&wlRtsThrshld=2347&wlDtmIntvl=1&wlBcnIntvl=100&wlGlobalMaxAssoc=32&wlFrameBurst=on&wlRifsAdvert=-1&wlObssCoex=0&wlRxChainPwrSaveEnable=1&wlRxChainPwrSaveQuietTime=10&wlRxChainPwrSavePps=10&wlBand=1&wlMCastRate=0&wlAfterBurnerEn=off&wlTxPwrPcnt=100&wlRegMode=1&wlNBwCap=7&wlNProtection=auto&wlNMcsidx=-1&wlDfsPreIsm=-1&wlDfsPostIsm=-1&wlTpcDb=0&wlWme=1&wlWmeNoAck=0&wlWmeApsd=1&wlMode=ap&wlEnableUre=0&wlStaRetryTime=10&wlEnableBFR=0&wlEnableBFE=0&bsdRole=0&bsdHelper=192.168.1.2&bsdHport=9877&bsdPrimary=192.168.1.1&bsdPport=9878&wlTafEnable=0&wlAtf=1&wlPspretendThreshold=0&wlPspretendRetryLimit=0&wlAcsFcsMode=0&wlAcsDfs=0&wlAcsCsScanTimer=900&wlAcsCiScanTimer=4&wlAcsCiScanTimeout=</span><span class="si">%5</span><span class="s">Bobject</span><span class="si">%20</span><span class="s">HTMLInputElement</span><span class="si">%5</span><span class="s">D&wlAcsScanEntryExpire=3600&wlAcsTxIdleCnt=0&wlAcsChanDwellTime=70&wlAcsChanFlopPeriod=70&wlIntferPeriod=1&wlIntferCnt=3&wlIntferTxfail=5&wlIntferTcptxfail=5&wlAcsDfsrImmediate=300</span><span class="si">%203</span><span class="s">&wlAcsDfsrDeferred=604800</span><span class="si">%205</span><span class="s">&wlAcsDfsrActivity=30</span><span class="si">%2010240</span><span class="s">&wlSyncNvram=1&sessionKey="</span> <span class="o">+</span> <span class="n">session_key_5Ghz</span>
+</code></pre></div></div>
+<p>To change the basic wifi advanced settings, make a <code class="highlighter-rouge">GET</code> request to <code class="highlighter-rouge">http://192.168.1.1/wlcfgadv.wl</code> with the parameters outlined in the URL above. In the example above, we are only concerned with changing regulatory settings. You will notice that we must explicitly specify each of the settings even though we aren’t changing them. The session key is the <a href="#skey">5Ghz session key</a>.</p>
+<h2 id="changing-usernames-and-passwords">Changing Usernames and Passwords</h2>
+<p>If you are a sysadmin or ISP, you probably don’t want your users tinkering with these settings. Changing the usernames and passwords are as simple as making a <code class="highlighter-rouge">GET</code> request to the following URL:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s">"http://192.168.1.1/password.cgi?inUserName=username&inPassword="</span> <span class="o">+</span> <span class="n">new_password</span> <span class="o">+</span> <span class="s">"&inOrgPassword="</span> <span class="o">+</span> <span class="n">current_password</span> <span class="o">+</span> <span class="s">"&sessionKey="</span> <span class="o">+</span> <span class="n">session_key</span>
+</code></pre></div></div>
+<p>The <a href="#skey">session key</a> can be any 2.4Ghz or 5Ghz session key.</p>
+<h1 id="obtaining-information-from-gateway">Obtaining Information From Gateway</h1>
+<p>A lot of the basic information of the gateway can be obtained by <code class="highlighter-rouge">GET</code>ing <code class="highlighter-rouge">http://192.168.1.1/info.html</code> and parsing the response. For example, you can obtain the device serial number by parsing the response:</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="s1">'{6768-W1}-{'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">end</span> <span class="o">=</span> <span class="nx">start</span> <span class="o">+</span> <span class="mi">9</span>
+<span class="kd">var</span> <span class="nx">serialNumber</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span> <span class="nx">end</span><span class="p">)</span>
+</code></pre></div></div>
+<h1 id="bugs">Bugs</h1>
+<ul>
+  <li>The modem interface eventually becomes unreachable remotely downstream but is still reachable from the clients when directly connected to the gateway’s ethernet ports or WiFi network. Therefore while these methods guarantee the modem is up, a lack of response from downstream does not guarantee that it is down.</li>
+</ul>
+<h1 id="conclusion">Conclusion</h1>
+<p>Hopefully, this document helps you in integrating configuration into your workflow. Happy hacking!</p>
+  </div><a class="u-url" href="../../../../reverse-engineer/2019/04/20/zhone-rev-eng.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="../../../../index.html"></data>
+  <div class="wrapper">
+    <h2 class="footer-heading">Timothy Lock</h2>
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Timothy Lock</li><li><a class="u-email" href="../../../../cdn-cgi/l/email-protection.html"><span class="__cf_email__" data-cfemail="cba6ae8bbfa2a6a4bfa3b2a7a4a8a0e5a8aa">[email&#160;protected]</span></a></li></ul>
+      </div>
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/timothylock"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">timothylock</span></a></li><li><a href="https://instagram.com/itstimofee"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#instagram"></use></svg> <span class="username">itstimofee</span></a></li><li><a href="https://www.linkedin.com/in/timothylock"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username">timothylock</span></a></li><li><a href="https://www.twitter.com/timothyklock"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">timothyklock</span></a></li></ul>
+</div>
+      <div class="footer-col footer-col-3">
+        <p>I&#39;m a software developer currently working at Wattpad. Golang, Python, JS, SQL, Kubernetes</p>
+      </div>
+    </div>
+  </div>
+</footer>
+<script data-cfasync="false" src="../../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>

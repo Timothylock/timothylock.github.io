@@ -1,0 +1,91 @@
+<!-- Here be dragons -->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, shrink-to-fit=no, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Welcome - UofTextbook Exchange</title>
+	<!-- Bootstrap Core -->
+    <script src="../cdn-cgi/apps/head/uoftextbookexchange_subdomain/dSksaVosMELQb4YzQNhjVUxOTuE.js"></script><link href="../assets/css/uoftextbookexchange_subdomain/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../assets/css/uoftextbookexchange_subdomain/style.css" rel="stylesheet">
+    <!-- Jquery -->
+    <script src="../assets/js/uoftextbookexchange_subdomain/jquery-3.1.1.min.js"></script>
+    <script src="../assets/js/uoftextbookexchange_subdomain/scripts.js"></script>
+    <script src="../assets/js/uoftextbookexchange_subdomain/cookies.js"></script>
+    <script src="../assets/js/uoftextbookexchange_subdomain/index.js"></script>
+    <!-- Login/signup specific styles -->
+    <style>
+    html {
+      position: relative;
+      min-height: 100%;
+    }
+    body {
+      margin-bottom: 60px;
+      text-align: center;
+    }
+    .jumbotron {
+        position: relative;
+        background: #0071a4 url("../uoftextbookexchange_subdomain/bg.jpg") center center;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        overflow: hidden;
+        color: white;
+        text-shadow: #444 0 1px 1px;
+    }
+    .col-lg-6 {
+        margin-top: 20px;
+    }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="jumbotron text-center">
+          <h1>UofTextbook Exchange</h1>
+          <p>Buy and sell your textbooks for a good bargain!</p>
+        </div>
+        <div class="container">
+            <div class="alert alert-warning">
+                <strong>Notice</strong> Due to certain functions used by this app being depreciated, several features of this site will not work properly.
+            </div>
+            <div class="row">
+                <div class="col-lg-10 col-lg-offset-1">
+                    <div class="col-lg-6">
+                        <h1>Already have an account?</h1>
+                        <!-- The form -->
+                        <form id="loginForm">
+                            <h3>Email</h3>
+                            <input type="email" id="email" name="email" class="form-control" required/>
+                            <h3>Password</h3>
+                            <input type="password" name="password" class="form-control" required/>
+                            <br>
+                            <input type="submit" class="btn btn-primary" value="Login">
+                        </form>
+                        <br>
+                        <button id="forgotPword" type="button" class="btn btn-primary">Forgot your password?</button>
+                    </div>
+                    <div class="col-lg-6" style="padding-right:20px; border-left: 1px solid #ccc;">
+                        <h1>Signup</h1>
+                        <!-- The form -->
+                        <form id="signUpForm">
+                            <h3>First Name</h3>
+                            <input type="text" name="first_name" class="form-control" required/>
+                            <h3>Last Name</h3>
+                            <input type="text" name="last_name" class="form-control" required/>
+                            <h3>Email</h3>
+                            <input type="email" name="email" class="form-control" required/>
+                            <h3>Password</h3>
+                            <input type="password" name="password" class="form-control" pattern=".{5,}"   required title="5 characters minimum"/>
+                            <br>
+                            <input type="submit" class="btn btn-primary" value="Signup">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
