@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)https://ruanjiafeng2013.gitee.io/birthday-cake520/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Happy Birthday</title>
+
+    <link rel="stylesheet" href="./情儿宝贝生日快乐_files/style2.css">
+    <style></style>
+  </head>
+  <body>
+    <audio id="audio_duration" autoplay="">
+      <source src="https://ruanjiafeng2013.gitee.io/birthday-cake520/mp3/birthday.mp3">
+    </audio>
+    <bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh><bokeh></bokeh>
+    <div class="mobile">最大化查看</div>
+    <div class="pyro">
+      <div class="before"></div>
+      <div class="after"></div>
+    </div>
+
+    <audio autoplay="autopaly">
+      <source src="https://ruanjiafeng2013.gitee.io/birthday-cake520/mp3/birthday.mp3" type="audio/mp3" />
+    </audio>
+    <!--<h1>Feliz Cumpleaños Pratik!</h1>-->
+    <h2>Happy Birthday Cutie!</h2>
+    <!--<span>🎉</span>-->
+    <div class="candle"><div id="flame" class="lit"></div></div>
+    <div class="cake"></div>
+    <div class="plate"></div>
+  
+  <script>
+    var myVid = document.getElementById("audio_duration");
+    if (myVid != null) {
+      var duration;
+      myVid.load();
+      myVid.oncanplay = function () {
+        console.log("myVid.duration", myVid.duration);
+        console.log("myVid.duration*100", myVid.duration * 1000);
+        let time = null;
+        clearTimeout(time);
+        time = setTimeout(function () {
+          location.href = "2.html";
+          clearTimeout(time);
+        }, myVid.duration * 1000);
+      };
+    }
+  </script>
+
+</body></html>

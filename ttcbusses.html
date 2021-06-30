@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TTC Bus Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+    <script>
+      var map;
+      var busMarkers = [];
+
+      function initMap() {
+        map = L.map('map', {
+            center: [43.6532, -79.3832],
+            zoom: 12,
+            fullscreenControl: true
+        });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        setInterval(function(){
+            fetch('https://webservices.umoiq.com/service/publicJSONFeed?command=vehicleLocations&a=ttc')
+            .then(response => response.json())
+            .then(data => {
+              // Clear existing bus markers
+              for (var i = 0; i < busMarkers.length; i++) {
+                map.removeLayer(busMarkers[i]);
+              }
+              busMarkers = [];
+
+              // Plot new bus locations
+              for (var i = 0; i < data.vehicle.length; i++) {
+                var busMarker = L.marker([data.vehicle[i].lat, data.vehicle[i].lon]).addTo(map);
+                var busInfo = 'Vehicle ID: ' + data.vehicle[i].id + '<br>' +
+                              'Route: ' + data.vehicle[i].routeTag + '<br>' +
+                              'Speed: ' + data.vehicle[i].speedKmHr + ' km/h';
+                busMarker.bindPopup(busInfo);
+                busMarkers.push(busMarker);
+              }
+            })
+            .catch(error => console.error('Error:', error));
+        }, 3000);
+      }
+    </script>
+  </head>
+  <body onload="initMap()">
+    <div id="map" style="height: 500px; width: 100%;"></div>
+  </body>
+</html>

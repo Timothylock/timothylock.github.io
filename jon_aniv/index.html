@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+      <link rel="apple-touch-icon" href="favicon.ico">
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Pulley</title>
+      <link rel="stylesheet" href="./style.css">
+      <link rel="icon" href="./favicon.ico" type="image/x-icon">
+      <style>
+         body {
+         overflow-y: hidden;
+         overflow-x: hidden;
+         }
+         button {
+         background: transparent;
+         border: none !important;
+         font-size:0;
+         }
+      </style>
+   </head>
+   <body>
+      <main>
+         <audio src="img/menu.mp3" id="audio" preload="auto" loop></audio>
+
+         <!-- VIDEO -->
+         <div id="video_pane" style="margin: auto; position: absolute; top: 0; left: 0;">
+            <img id="liveImage" class="video-image" style="width: 100%" alt="video" src="http://10.88.111.166:8080/video">
+         </div>
+
+         <!-- INTRO OVERLAY -->
+         <div id="intro_overlay_pane" style="margin: auto; position: absolute; top: 0; left: 0;">
+            <img style="width: 100%" src="img/intro.png?r=12345432">
+         </div>
+
+         <!-- MENU OVERLAY -->
+         <div id="menu_overlay_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <img style="width: 100%" src="img/menu.png?r=12345432">
+         </div>
+
+         <!-- NOGAME OVERLAY -->
+         <div id="preview_overlay_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <img style="width: 100%" src="img/preview_overlay.png?r=1234542">
+         </div>
+
+         <!-- GETREADY OVERLAY -->
+         <div id="getready_overlay_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <img style="width: 100%" src="img/get_ready_overlay.png?r=1234542">
+         </div>
+
+         <!-- GAME X OVERLAY -->
+         <div id="gamex_overlay_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <img style="width: 100%" src="img/X-overlay.png?r=1234542">
+         </div>
+
+         <!-- GAME Y OVERLAY -->
+         <div id="gamey_overlay_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <img style="width: 100%" src="img/Y-overlay.png?r=1234542">
+         </div>
+
+         <!-- CLAWING OVERLAY -->
+         <div id="clawing_overlay_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <img style="width: 100%" src="img/clawing.png?r=123">
+         </div>
+
+         <!-- FINISHED OVERLAY -->
+         <div id="finished_overlay_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <img style="width: 100%" src="img/finished_overlay.png?r=3432">
+         </div>
+
+         <!-- INTRO MENU -->
+         <div id="buttons_intro_pane" style="margin: auto; position: absolute; top: 0; left: 0;">
+            <button type="button" style="position: absolute; top: 0px; left: 0px; height: 1000px; width: 1000px" onclick="toMenu();">Home</button>
+         </div>
+
+         <!-- BUTTONS MENU -->
+         <div id="buttons_menu_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <button type="button" style="position: absolute; top: 0px; left: 0px; height: 50px; width: 50px" onclick="window.location.href = 'index.html'">Home</button>
+            <button type="button" style="position: absolute; top: 0px; left: 375px; height: 50px; width: 50px" onclick="window.location.href = 'http://jonho.me'">Profile</button>
+            <button type="button" style="position: absolute; top: 150px; left: 0px; height: 500px; width: 450px" onclick="toPreview();">Click Me!</button>
+         </div>
+
+         <!-- BUTTONS NOGAME -->
+         <div id="buttons_nongame_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <button type="button" style="position: absolute; top: 0px; left: 0px; height: 50px; width: 50px" onclick="window.location.href = 'index.html'">Home</button>
+            <button type="button" style="position: absolute; top: 0px; left: 375px; height: 50px; width: 50px" onclick="window.location.href = 'http://jonho.me'">Profile</button>
+            <button type="button" style="position: absolute; top: 690px; left: 150px; height: 125px; width: 130px" onclick="getStarted();">Click Me!</button>
+            <button type="button" style="position: absolute; top: 820px; left: 185px; height: 50px; width: 50px" onclick="window.location.href = 'https://cloud.jonho.me/timder/'">Chat</button>
+            <button type="button" style="position: absolute; top: 680px; left: 35px; height: 85px; width: 100px" onclick="window.location.href = 'https://paypal.me/TimothyLock'">Buy Coins</button>
+            <button type="button" style="position: absolute; top: 680px; left: 295px; height: 85px; width: 100px" onclick="alert('One view is all you need :)')">Switch Cam</button>
+         </div>
+
+         <!-- BUTTONS GAME_X -->
+         <div id="buttons_gamex_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <button type="button" style="position: absolute; top: 0px; left: 0px; height: 50px; width: 50px" onclick="window.location.href = 'index.html'">Home</button>
+            <button type="button" style="position: absolute; top: 0px; left: 375px; height: 50px; width: 50px" onclick="window.location.href = 'http://jonho.me'">Profile</button>
+            <button type="button" style="position: absolute; top: 690px; left: 150px; height: 125px; width: 130px" onclick="gameY();">Click Me!</button>
+            <button type="button" style="position: absolute; top: 820px; left: 185px; height: 50px; width: 50px" onclick="window.location.href = 'https://cloud.jonho.me/timder/'">Chat</button>
+         </div>
+
+         <!-- BUTTONS GAME_Y -->
+         <div id="buttons_gamey_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <button type="button" style="position: absolute; top: 0px; left: 0px; height: 50px; width: 50px" onclick="window.location.href = 'index.html'">Home</button>
+            <button type="button" style="position: absolute; top: 0px; left: 375px; height: 50px; width: 50px" onclick="window.location.href = 'http://jonho.me'">Profile</button>
+            <button type="button" style="position: absolute; top: 690px; left: 150px; height: 125px; width: 130px" onclick="grab();">Click Me!</button>
+            <button type="button" style="position: absolute; top: 820px; left: 185px; height: 50px; width: 50px" onclick="window.location.href = 'https://cloud.jonho.me/timder/'">Chat</button>
+         </div>
+
+         <!-- BUTTONS FINISHED -->
+         <div id="buttons_finished_pane" style="margin: auto; position: absolute; top: 0; left: 0; visibility: hidden;">
+            <button type="button" style="position: absolute; top: 0px; left: 0px; height: 50px; width: 50px" onclick="window.location.href = 'index.html'">Home</button>
+            <button type="button" style="position: absolute; top: 0px; left: 375px; height: 50px; width: 50px" onclick="window.location.href = 'http://jonho.me'">Profile</button>
+            <button type="button" style="position: absolute; top: 820px; left: 185px; height: 50px; width: 50px" onclick="window.location.href = 'https://cloud.jonho.me/timder/'">Chat</button>
+            <button type="button" style="position: absolute; top: 680px; left: 35px; height: 85px; width: 100px" onclick="window.location.href = 'index.html'">Home</button>
+         </div>
+      </main>
+      <script src="index.js"></script>
+      <script>
+         document.ontouchstart = function(e){ 
+             e.preventDefault(); 
+         }
+
+         var audio = document.getElementById("audio");
+         var loopTimes = 0;
+
+         function toMenu() {
+           audio.play();
+           document.getElementById("menu_overlay_pane").style.visibility = "visible";
+           document.getElementById("intro_overlay_pane").style.visibility = "hidden";
+           document.getElementById("buttons_intro_pane").style.visibility = "hidden";
+           document.getElementById("buttons_menu_pane").style.visibility = "visible";
+         }
+
+         function toPreview() {
+           document.getElementById("menu_overlay_pane").style.visibility = "hidden";
+           document.getElementById("preview_overlay_pane").style.visibility = "visible";
+           document.getElementById("buttons_menu_pane").style.visibility = "hidden";
+           document.getElementById("buttons_nongame_pane").style.visibility = "visible";
+         }
+         
+         function getStarted() {
+           audio.pause();
+           document.getElementById("getready_overlay_pane").style.visibility = "visible";
+           document.getElementById("preview_overlay_pane").style.visibility = "hidden";
+           document.getElementById("buttons_nongame_pane").style.visibility = "hidden";
+          //  sendCommandToPrinter([
+          //     "G90",
+          //     "G0 F10000",
+          //     "G28",
+          //     "G0 X0 Y0",
+          //     "G0 Z75"
+          //   ]);
+           setTimeout(startGameX, 1500);
+         }
+         
+         function startGameX() {
+          clearIntervals();
+          change("img/ingame.mp3");
+           document.getElementById("gamex_overlay_pane").style.visibility = "visible";
+           document.getElementById("getready_overlay_pane").style.visibility = "hidden";
+           document.getElementById("buttons_gamex_pane").style.visibility = "visible";
+           setInterval(function () {
+              // Force game into next state to avoid running printer axis beyond limits
+              if (loopTimes > 22) {
+                 loopTimes = 0;
+                 gameY();
+              }
+              sendCommandToPrinter(["G91", "G0 X10 F2000"]);
+              loopTimes += 1;
+              }, 300);
+         }
+         
+         function gameY() {
+          clearIntervals();
+           document.getElementById("gamey_overlay_pane").style.visibility = "visible";
+           document.getElementById("gamex_overlay_pane").style.visibility = "hidden";
+           document.getElementById("buttons_gamex_pane").style.visibility = "hidden";
+           document.getElementById("buttons_gamey_pane").style.visibility = "visible";
+           setInterval(function () {
+              if (loopTimes > 22) {
+                 // Force game into next state to avoid running printer axis beyond limits
+                 loopTimes = 0;
+                 grab();
+              }
+              sendCommandToPrinter(["G91", "G0 Y10 F2000"]);
+              loopTimes += 1;
+              }, 300);
+         }
+         
+         function grab() {
+          clearIntervals();
+           document.getElementById("clawing_overlay_pane").style.visibility = "visible";
+           document.getElementById("gamey_overlay_pane").style.visibility = "hidden";
+           document.getElementById("buttons_gamey_pane").style.visibility = "hidden";
+           sendCommandToPrinter(["G91", "G0 E200 F10000", "G0 E-200 F10000", "G90", "G0 X0 Y0 F6000"]);
+         
+           setTimeout(function() {
+            change("img/menu.mp3");
+             document.getElementById("finished_overlay_pane").style.visibility = "visible";
+             document.getElementById("clawing_overlay_pane").style.visibility = "hidden";
+             document.getElementById("buttons_finished_pane").style.visibility = "visible";
+           }, 20000);
+         }
+
+         function sendCommandToPrinter(commands) {
+          var data = JSON.stringify({
+            "commands": commands
+          });
+
+          var xhr = new XMLHttpRequest();
+          xhr.withCredentials = false;
+
+          xhr.addEventListener("readystatechange", function() {
+            if(this.readyState === 4) {
+              console.log(this.responseText);
+            }
+          });
+
+          xhr.open("POST", "http://10.88.111.215:5000/api/printer/command");
+          xhr.setRequestHeader("X-Api-Key", "B8E3A68AA1004A5E81DB831DC79D7E79");
+          xhr.setRequestHeader("Content-Type", "application/json");
+
+          xhr.send(data);
+         }
+
+         function change(sourceUrl) { 
+            audio.pause();
+            audio.setAttribute('src', sourceUrl);
+            audio.load();
+            audio.play();
+         }
+
+         function clearIntervals() {
+           // Get a reference to the last interval + 1
+            const interval_id = window.setInterval(function(){}, Number.MAX_SAFE_INTEGER);
+
+            // Clear any timeout/interval up to that id
+            for (let i = 1; i < interval_id; i++) {
+              window.clearInterval(i);
+            }
+         }
+      </script>
+   </body>
+</html>
