@@ -1,53 +1,1156 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>TTC Bus Map</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-   crossorigin=""/>
-   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-   crossorigin=""></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTC Bus Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f5f5f7;
+            --bg-sidebar: rgba(255, 255, 255, 0.72);
+            --bg-item: rgba(255, 255, 255, 0.6);
+            --bg-hover: rgba(255, 255, 255, 0.9);
+            --text-primary: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --text-tertiary: #86868b;
+            --accent: #0071e3;
+            --accent-light: #e8f4fd;
+            --green: #34c759;
+            --orange: #ff9500;
+            --red: #ff3b30;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #map {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        /* Apple-style Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            width: 380px;
+            height: calc(100vh - 32px);
+            background: var(--bg-sidebar);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(calc(-100% - 32px));
+        }
+
+        /* Segmented Control (Apple-style tabs) */
+        .sidebar-header {
+            padding: 20px 20px 16px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+        }
+
+        .segmented-control {
+            display: flex;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 10px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .segment {
+            flex: 1;
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .segment:hover {
+            color: var(--text-primary);
+        }
+
+        .segment.active {
+            background: white;
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Search Bar */
+        .search-container {
+            padding: 0 20px 16px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 14px 10px 36px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-bar input:focus {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: var(--text-tertiary);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 0 12px 12px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .view.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .view::-webkit-scrollbar {
+            width: 0;
+        }
+
+        /* Section Headers */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            padding: 8px;
+            margin-bottom: 4px;
+        }
+
+        .section-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 0 8px 12px;
+        }
+
+        /* List Items (Apple Find My style) */
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 2px;
+            background: var(--bg-item);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .list-item:hover {
+            background: var(--bg-hover);
+            transform: scale(1.01);
+            box-shadow: var(--shadow);
+        }
+
+        .list-item.selected {
+            background: var(--accent-light);
+            border-color: rgba(0, 113, 227, 0.2);
+        }
+
+        .item-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .item-icon.route {
+            background: linear-gradient(135deg, #ff3b30, #ff6b61);
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3);
+        }
+
+        .item-icon.bus {
+            background: linear-gradient(135deg, #0071e3, #5ac8fa);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 113, 227, 0.3);
+        }
+
+        .item-icon.stats {
+            background: linear-gradient(135deg, #34c759, #30d158);
+            color: white;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .status-dot.active {
+            background: var(--green);
+        }
+
+        .status-dot.moving {
+            background: var(--green);
+        }
+
+        .status-dot.stopped {
+            background: var(--orange);
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .item-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .item-meta {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .item-count {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .item-status {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 8px;
+        }
+
+        .stat-card {
+            background: var(--bg-item);
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            background: var(--bg-hover);
+            transform: scale(1.02);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Bottom Panel (Bus Details) */
+        .bottom-panel {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(calc(100% + 40px));
+            width: 90%;
+            max-width: 500px;
+            background: var(--bg-sidebar);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            z-index: 1001;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bottom-panel.open {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .panel-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #0071e3, #5ac8fa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+        }
+
+        .panel-title {
+            flex: 1;
+        }
+
+        .panel-title h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .panel-title p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .panel-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .panel-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .panel-stat {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+        }
+
+        .panel-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .panel-stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Toggle Button */
+        .sidebar-toggle {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1002;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            color: var(--text-primary);
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .sidebar-toggle.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Map Controls */
+        .map-controls {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .map-control-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .map-control-btn:hover {
+            transform: scale(1.05);
+            background: white;
+        }
+
+        /* Leaflet Overrides */
+        .leaflet-control-zoom {
+            border: none !important;
+            box-shadow: var(--shadow) !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+        }
+
+        .leaflet-control-zoom a {
+            width: 40px !important;
+            height: 40px !important;
+            line-height: 40px !important;
+            font-size: 20px !important;
+            color: var(--text-primary) !important;
+            background: var(--bg-sidebar) !important;
+            backdrop-filter: blur(20px) !important;
+            border: none !important;
+            border-bottom: 1px solid var(--border) !important;
+        }
+
+        .leaflet-control-zoom a:hover {
+            background: white !important;
+        }
+
+        /* Bus Markers */
+        .bus-marker {
+            background: linear-gradient(135deg, #0071e3, #5ac8fa);
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 11px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .bus-marker:hover {
+            transform: scale(1.2);
+            z-index: 1000 !important;
+        }
+
+        .bus-marker.moving {
+            background: linear-gradient(135deg, #34c759, #30d158);
+        }
+
+        /* Loading Screen */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 113, 227, 0.2);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Update indicator */
+        .update-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-sidebar);
+            backdrop-filter: blur(20px);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: calc(100vw - 32px);
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 70vh;
+                border-radius: 20px 20px 0 0;
+                transform: translateY(calc(100% - 80px));
+            }
+
+            .sidebar.expanded {
+                transform: translateY(0);
+            }
+
+            .sidebar.collapsed {
+                transform: translateY(calc(100% - 80px));
+            }
+
+            .sidebar-handle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading TTC buses...</div>
+    </div>
+
+    <!-- Sidebar Toggle -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="segmented-control">
+                <div class="segment active" data-view="routes">Routes</div>
+                <div class="segment" data-view="buses">Buses</div>
+                <div class="segment" data-view="stats">Stats</div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-bar">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search routes or buses...">
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Routes View -->
+            <div class="view active" id="routesView">
+                <div class="section-subtitle" id="routesSubtitle">All active routes</div>
+                <div id="routesList"></div>
+            </div>
+
+            <!-- Buses View -->
+            <div class="view" id="busesView">
+                <div class="section-subtitle" id="busesSubtitle">All active buses</div>
+                <div id="busesList"></div>
+            </div>
+
+            <!-- Stats View -->
+            <div class="view" id="statsView">
+                <div class="section-title">Overview</div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTotalBuses">-</div>
+                        <div class="stat-label">Active Buses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statActiveRoutes">-</div>
+                        <div class="stat-label">Routes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statAvgSpeed">-</div>
+                        <div class="stat-label">Avg Speed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statMoving">-</div>
+                        <div class="stat-label">Moving</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Bottom Panel (Bus Details) -->
+    <div class="bottom-panel" id="bottomPanel">
+        <div class="panel-header">
+            <div class="panel-icon" id="panelIcon">🚌</div>
+            <div class="panel-title">
+                <h3 id="panelTitle">Bus Details</h3>
+                <p id="panelSubtitle">Route information</p>
+            </div>
+            <button class="panel-close" id="panelClose">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="panel-stats">
+            <div class="panel-stat">
+                <div class="panel-stat-value" id="panelSpeed">-</div>
+                <div class="panel-stat-label">Speed</div>
+            </div>
+            <div class="panel-stat">
+                <div class="panel-stat-value" id="panelDirection">-</div>
+                <div class="panel-stat-label">Direction</div>
+            </div>
+            <div class="panel-stat">
+                <div class="panel-stat-value" id="panelUpdated">-</div>
+                <div class="panel-stat-label">Updated</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Controls -->
+    <div class="map-controls">
+        <button class="map-control-btn" id="locateBtn" title="Center on Toronto">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Update Indicator -->
+    <div class="update-indicator">
+        <span class="live-dot"></span>
+        <span id="updateText">Live updates</span>
+    </div>
+
+    <!-- Map -->
+    <div id="map"></div>
+
     <script>
-      var map;
-      var busMarkers = [];
+        // State
+        let map;
+        let busMarkers = {};
+        let allBuses = [];
+        let allRoutes = [];
+        let routeCounts = {};
+        let selectedBusId = null;
+        let currentView = 'routes';
+        let updateInterval;
 
-      function initMap() {
-        map = L.map('map', {
-            center: [43.6532, -79.3832],
-            zoom: 12,
-            fullscreenControl: true
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            setupEventListeners();
+            loadData();
         });
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
 
-        setInterval(function(){
-            fetch('https://webservices.umoiq.com/service/publicJSONFeed?command=vehicleLocations&a=ttc')
-            .then(response => response.json())
-            .then(data => {
-              // Clear existing bus markers
-              for (var i = 0; i < busMarkers.length; i++) {
-                map.removeLayer(busMarkers[i]);
-              }
-              busMarkers = [];
+        function initMap() {
+            map = L.map('map', {
+                center: [43.6532, -79.3832],
+                zoom: 12,
+                zoomControl: false
+            });
 
-              // Plot new bus locations
-              for (var i = 0; i < data.vehicle.length; i++) {
-                var busMarker = L.marker([data.vehicle[i].lat, data.vehicle[i].lon]).addTo(map);
-                var busInfo = 'Vehicle ID: ' + data.vehicle[i].id + '<br>' +
-                              'Route: ' + data.vehicle[i].routeTag + '<br>' +
-                              'Speed: ' + data.vehicle[i].speedKmHr + ' km/h';
-                busMarker.bindPopup(busInfo);
-                busMarkers.push(busMarker);
-              }
-            })
-            .catch(error => console.error('Error:', error));
-        }, 3000);
-      }
+            // Light Apple-style map tiles
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+        }
+
+        async function loadData() {
+            try {
+                // Load routes
+                const routeRes = await fetch('https://webservices.umoiq.com/service/publicJSONFeed?command=routeList&a=ttc');
+                const routeData = await routeRes.json();
+                
+                if (routeData.route) {
+                    allRoutes = routeData.route.sort((a, b) => {
+                        const aNum = parseInt(a.tag);
+                        const bNum = parseInt(b.tag);
+                        if (!isNaN(aNum) && !isNaN(bNum)) return aNum - bNum;
+                        return a.tag.localeCompare(b.tag);
+                    });
+                }
+
+                // Initial bus fetch
+                await fetchBuses();
+                
+                // Start updates
+                updateInterval = setInterval(fetchBuses, 2000);
+                
+                document.getElementById('loading').classList.add('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+                document.querySelector('.loading-text').textContent = 'Error loading. Retrying...';
+                setTimeout(loadData, 3000);
+            }
+        }
+
+        async function fetchBuses() {
+            try {
+                const res = await fetch('https://webservices.umoiq.com/service/publicJSONFeed?command=vehicleLocations&a=ttc');
+                const data = await res.json();
+                
+                if (data.vehicle) {
+                    const vehicles = Array.isArray(data.vehicle) ? data.vehicle : [data.vehicle];
+                    updateBuses(vehicles);
+                    updateStats(vehicles);
+                    updateLists();
+                    document.getElementById('updateText').textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+
+        function updateBuses(vehicles) {
+            allBuses = vehicles;
+            const currentIds = new Set();
+            routeCounts = {};
+
+            vehicles.forEach(bus => {
+                currentIds.add(bus.id);
+                routeCounts[bus.routeTag] = (routeCounts[bus.routeTag] || 0) + 1;
+
+                const lat = parseFloat(bus.lat);
+                const lon = parseFloat(bus.lon);
+                const speed = parseInt(bus.speedKmHr) || 0;
+                const isMoving = speed > 0;
+
+                if (busMarkers[bus.id]) {
+                    busMarkers[bus.id].setLatLng([lat, lon]);
+                    busMarkers[bus.id].busData = bus;
+                    
+                    // Update marker appearance based on movement
+                    const el = busMarkers[bus.id].getElement();
+                    if (el) {
+                        el.querySelector('.bus-marker').classList.toggle('moving', isMoving);
+                    }
+                } else {
+                    const icon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div class="bus-marker ${isMoving ? 'moving' : ''}">${bus.routeTag}</div>`,
+                        iconSize: [36, 36],
+                        iconAnchor: [18, 18]
+                    });
+
+                    const marker = L.marker([lat, lon], { icon });
+                    marker.busData = bus;
+                    marker.addTo(map);
+                    
+                    marker.on('click', () => selectBus(bus.id));
+                    
+                    busMarkers[bus.id] = marker;
+                }
+            });
+
+            // Remove stale markers
+            Object.keys(busMarkers).forEach(id => {
+                if (!currentIds.has(id)) {
+                    map.removeLayer(busMarkers[id]);
+                    delete busMarkers[id];
+                }
+            });
+        }
+
+        function updateStats(vehicles) {
+            const total = vehicles.length;
+            const activeRoutes = Object.keys(routeCounts).length;
+            const totalSpeed = vehicles.reduce((sum, v) => sum + (parseInt(v.speedKmHr) || 0), 0);
+            const avgSpeed = total > 0 ? Math.round(totalSpeed / total) : 0;
+            const moving = vehicles.filter(v => (parseInt(v.speedKmHr) || 0) > 0).length;
+
+            document.getElementById('statTotalBuses').textContent = total.toLocaleString();
+            document.getElementById('statActiveRoutes').textContent = activeRoutes;
+            document.getElementById('statAvgSpeed').textContent = avgSpeed;
+            document.getElementById('statMoving').textContent = moving;
+        }
+
+        function updateLists() {
+            renderRoutesList();
+            renderBusesList();
+        }
+
+        function renderRoutesList() {
+            const container = document.getElementById('routesList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let html = '';
+            let visibleCount = 0;
+
+            allRoutes.forEach(route => {
+                const count = routeCounts[route.tag] || 0;
+                if (count === 0) return;
+
+                const routeName = route.title.replace(/^\d+-/, '');
+                if (searchTerm && !route.tag.includes(searchTerm) && !routeName.toLowerCase().includes(searchTerm)) {
+                    return;
+                }
+
+                visibleCount++;
+                html += `
+                    <div class="list-item" onclick="focusRoute('${route.tag}')">
+                        <div class="item-icon route">
+                            ${route.tag}
+                            <span class="status-dot active"></span>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">${routeName}</div>
+                            <div class="item-subtitle">${count} bus${count !== 1 ? 'es' : ''} active</div>
+                        </div>
+                        <div class="item-meta">
+                            <div class="item-count">${count}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('routesSubtitle').textContent = visibleCount === allRoutes.length 
+                ? 'All active routes' 
+                : `${visibleCount} of ${allRoutes.length} routes`;
+
+            container.innerHTML = html || '<div class="empty-state"><p>No routes found</p></div>';
+        }
+
+        function renderBusesList() {
+            const container = document.getElementById('busesList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let html = '';
+
+            const sortedBuses = [...allBuses].sort((a, b) => {
+                const speedA = parseInt(a.speedKmHr) || 0;
+                const speedB = parseInt(b.speedKmHr) || 0;
+                return speedB - speedA;
+            });
+
+            sortedBuses.forEach(bus => {
+                const speed = parseInt(bus.speedKmHr) || 0;
+                const isMoving = speed > 0;
+                const routeName = allRoutes.find(r => r.tag === bus.routeTag)?.title.replace(/^\d+-/, '') || '';
+                
+                if (searchTerm && !bus.id.includes(searchTerm) && !bus.routeTag.includes(searchTerm) && !routeName.toLowerCase().includes(searchTerm)) {
+                    return;
+                }
+
+                html += `
+                    <div class="list-item ${selectedBusId === bus.id ? 'selected' : ''}" onclick="selectBus('${bus.id}')">
+                        <div class="item-icon bus">
+                            ${bus.routeTag}
+                            <span class="status-dot ${isMoving ? 'moving' : 'stopped'}"></span>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Bus ${bus.id}</div>
+                            <div class="item-subtitle">${routeName} ${isMoving ? '• ' + speed + ' km/h' : '• Stopped'}</div>
+                        </div>
+                        <div class="item-meta">
+                            <div class="item-status">${speed} km/h</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('busesSubtitle').textContent = `${allBuses.length} buses active`;
+            container.innerHTML = html || '<div class="empty-state"><p>No buses found</p></div>';
+        }
+
+        function selectBus(busId) {
+            selectedBusId = busId;
+            const bus = allBuses.find(b => b.id === busId);
+            const marker = busMarkers[busId];
+
+            if (bus && marker) {
+                // Center map on bus
+                map.setView(marker.getLatLng(), 15, { animate: true, duration: 0.5 });
+                
+                // Show bottom panel
+                const speed = parseInt(bus.speedKmHr) || 0;
+                const direction = getDirection(bus.heading);
+                const lastUpdate = parseInt(bus.secsSinceReport) || 0;
+                const routeName = allRoutes.find(r => r.tag === bus.routeTag)?.title.replace(/^\d+-/, '') || '';
+
+                document.getElementById('panelIcon').textContent = bus.routeTag;
+                document.getElementById('panelTitle').textContent = `Bus ${bus.id}`;
+                document.getElementById('panelSubtitle').textContent = routeName;
+                document.getElementById('panelSpeed').textContent = speed + ' km/h';
+                document.getElementById('panelDirection').textContent = direction;
+                document.getElementById('panelUpdated').textContent = lastUpdate + 's ago';
+                
+                document.getElementById('bottomPanel').classList.add('open');
+                
+                // Update selection in list
+                if (currentView === 'buses') {
+                    renderBusesList();
+                }
+            }
+        }
+
+        function focusRoute(routeTag) {
+            const routeBuses = allBuses.filter(b => b.routeTag === routeTag);
+            if (routeBuses.length === 0) return;
+
+            // Get bounds of all buses on this route
+            const bounds = L.latLngBounds();
+            routeBuses.forEach(bus => {
+                const marker = busMarkers[bus.id];
+                if (marker) bounds.extend(marker.getLatLng());
+            });
+
+            if (bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [50, 50], animate: true });
+            }
+        }
+
+        function getDirection(heading) {
+            const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+            const index = Math.round(((parseInt(heading) || 0) % 360) / 45) % 8;
+            return directions[index];
+        }
+
+        function setupEventListeners() {
+            // Segmented control
+            document.querySelectorAll('.segment').forEach(seg => {
+                seg.addEventListener('click', () => {
+                    document.querySelectorAll('.segment').forEach(s => s.classList.remove('active'));
+                    seg.classList.add('active');
+                    
+                    const view = seg.dataset.view;
+                    currentView = view;
+                    
+                    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                    document.getElementById(view + 'View').classList.add('active');
+                    
+                    // Update search placeholder
+                    document.getElementById('searchInput').placeholder = view === 'routes' 
+                        ? 'Search routes...' 
+                        : view === 'buses' 
+                            ? 'Search buses...' 
+                            : 'Search...';
+                });
+            });
+
+            // Search
+            document.getElementById('searchInput').addEventListener('input', () => {
+                if (currentView === 'routes') renderRoutesList();
+                else if (currentView === 'buses') renderBusesList();
+            });
+
+            // Panel close
+            document.getElementById('panelClose').addEventListener('click', () => {
+                document.getElementById('bottomPanel').classList.remove('open');
+                selectedBusId = null;
+                renderBusesList();
+            });
+
+            // Sidebar toggle
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('sidebarToggle');
+            
+            toggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                toggle.classList.toggle('visible');
+            });
+
+            // Show toggle when sidebar collapsed on desktop
+            sidebar.addEventListener('transitionend', () => {
+                if (sidebar.classList.contains('collapsed')) {
+                    toggle.classList.add('visible');
+                }
+            });
+
+            // Locate button
+            document.getElementById('locateBtn').addEventListener('click', () => {
+                map.setView([43.6532, -79.3832], 12, { animate: true });
+            });
+
+            // Map click to close panel
+            map.on('click', () => {
+                document.getElementById('bottomPanel').classList.remove('open');
+                selectedBusId = null;
+                renderBusesList();
+            });
+        }
     </script>
-  </head>
-  <body onload="initMap()">
-    <div id="map" style="height: 500px; width: 100%;"></div>
-  </body>
+</body>
 </html>
