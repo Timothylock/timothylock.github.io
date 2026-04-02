@@ -686,6 +686,43 @@
                 flex-direction: column;
             }
         }
+
+        /* Tablet portrait: restore 2-column layout */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+            .hero {
+                grid-template-columns: 1fr 1fr;
+                min-height: 100vh;
+                padding: 6rem 2rem 0;
+                padding-bottom: 0;
+                gap: 2rem;
+            }
+
+            .hero-content {
+                text-align: left;
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .hero-visual {
+                display: flex;
+            }
+
+            .mobile-code-window {
+                display: none;
+            }
+
+            .skills {
+                justify-content: flex-start;
+            }
+
+            .social-links {
+                justify-content: flex-start;
+            }
+
+            .nav-links {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body>
