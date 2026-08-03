@@ -337,7 +337,6 @@
         .experience-list {
             display: flex;
             flex-direction: column;
-            gap: 2.5rem;
         }
 
         .experience-item {
@@ -345,6 +344,10 @@
             padding-left: 2rem;
             border-left: 1px solid var(--border);
             transition: border-color 0.3s ease;
+        }
+
+        .experience-item:not(:last-child) {
+            padding-bottom: 2.5rem;
         }
 
         .experience-item:hover {
@@ -998,16 +1001,15 @@
                 </div>
             </a>
 
-            <a href="https://devpost.com/software/printcakes-pancake-printer" target="_blank" class="project-card reveal">
+            <a href="https://pokebinder.net" target="_blank" class="project-card reveal">
                 <div class="project-header">
-                    <h3 class="project-title">Printcakes</h3>
+                    <h3 class="project-title">PokeBinder</h3>
                     <svg class="project-arrow" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7v10"/></svg>
                 </div>
-                <p class="project-desc">A pancake printer that creates edible art. Because why not?</p>
+                <p class="project-desc">Pokemon card collection tracking with scanning and live price history.</p>
                 <div class="project-tags">
-                    <span class="project-tag">Hardware</span>
-                    <span class="project-tag">Fun</span>
-                    <span class="project-tag">Hackathon</span>
+                    <span class="project-tag">Go</span>
+                    <span class="project-tag">React</span>
                 </div>
             </a>
         </div>

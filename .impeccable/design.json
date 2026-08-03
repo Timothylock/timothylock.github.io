@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-03T00:00:00Z",
+  "title": "Design System: Timothy Lock Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "bg-primary": { "role": "neutral", "displayName": "Paper", "canonical": "#fafafa", "tonalRamp": ["#171717", "#2e2e2e", "#525252", "#737373", "#a3a3a3", "#d4d4d4", "#e5e5e5", "#fafafa"] },
+      "bg-secondary": { "role": "neutral", "displayName": "Fog", "canonical": "#f5f5f5", "tonalRamp": ["#171717", "#2e2e2e", "#525252", "#737373", "#a3a3a3", "#c7c7c7", "#e0e0e0", "#f5f5f5"] },
+      "text-primary": { "role": "primary", "displayName": "Ink", "canonical": "#171717", "tonalRamp": ["#0a0a0a", "#171717", "#2e2e2e", "#525252", "#737373", "#a3a3a3", "#d4d4d4", "#fafafa"] },
+      "text-secondary": { "role": "neutral", "displayName": "Slate", "canonical": "#737373", "tonalRamp": ["#171717", "#2e2e2e", "#525252", "#737373", "#8f8f8f", "#a3a3a3", "#c7c7c7", "#e5e5e5"] },
+      "border": { "role": "neutral", "displayName": "Hairline", "canonical": "#e5e5e5", "tonalRamp": ["#171717", "#404040", "#737373", "#a3a3a3", "#c7c7c7", "#d4d4d4", "#e5e5e5", "#f5f5f5"] },
+      "code-bg": { "role": "secondary", "displayName": "Terminal Black", "canonical": "#1e1e1e", "tonalRamp": ["#000000", "#1e1e1e", "#2d2d2d", "#3d3d3d", "#5c5c5c", "#8a8a8a", "#c0c0c0", "#f5f5f5"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero title only." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles (Experience, Projects)." },
+      "body": { "displayName": "Body", "purpose": "Descriptions, hero subtitle." },
+      "label": { "displayName": "Label", "purpose": "Nav links, tags, badges, resume link." },
+      "mono": { "displayName": "Mono", "purpose": "Code window content only." }
+    },
+    "shadows": [
+      { "name": "code-window-rest", "value": "0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1) inset", "purpose": "Permanent elevation on the hero code window, the one component allowed ambient shadow." },
+      { "name": "card-hover", "value": "0 20px 40px -15px rgba(0,0,0,0.1)", "purpose": "Project card hover feedback only." }
+    ],
+    "motion": [
+      { "name": "fade-in-up", "value": "translateY(20px) -> translateY(0), opacity 0 -> 1, 0.6s ease", "purpose": "Hero element entrance stagger." },
+      { "name": "reveal-on-scroll", "value": "translateY(30px) -> translateY(0), opacity 0 -> 1, 0.6s ease", "purpose": "Uniform scroll-triggered reveal applied to every section." },
+      { "name": "type-in", "value": "opacity 0 -> 1, 0.1s ease, staggered 0.1s per line", "purpose": "Code window's line-by-line typing simulation." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "640px" },
+      { "name": "tablet", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Project Card",
+      "kind": "card",
+      "refersTo": "project-card",
+      "description": "Grid card linking out to a project; borderless-shadow at rest, lifts and shadows on hover.",
+      "html": "<a class=\"ds-project-card\" href=\"#\"><div class=\"ds-project-header\"><span class=\"ds-project-title\">Project Name</span></div><p class=\"ds-project-desc\">Short project description goes here.</p><div class=\"ds-project-tags\"><span class=\"ds-project-tag\">Go</span><span class=\"ds-project-tag\">Kubernetes</span></div></a>",
+      "css": ".ds-project-card { display: block; background: #fafafa; border-radius: 12px; padding: 1.5rem; border: 1px solid #e5e5e5; text-decoration: none; color: #171717; transition: all 0.3s ease; } .ds-project-card:hover { border-color: transparent; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1); transform: translateY(-2px); } .ds-project-title { font-family: 'Inter', sans-serif; font-size: 1.0625rem; font-weight: 600; } .ds-project-card:hover .ds-project-title { text-decoration: underline; } .ds-project-desc { font-size: 0.9375rem; color: #737373; line-height: 1.6; margin: 0.75rem 0 1rem; } .ds-project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; } .ds-project-tag { font-size: 0.6875rem; font-weight: 500; padding: 0.25rem 0.625rem; background: #f5f5f5; border-radius: 4px; color: #737373; }"
+    },
+    {
+      "name": "Skill Tag",
+      "kind": "chip",
+      "refersTo": "skill-tag",
+      "description": "Pill-shaped label used for skills and project tags.",
+      "html": "<span class=\"ds-skill-tag\">TypeScript</span>",
+      "css": ".ds-skill-tag { display: inline-block; padding: 0.375rem 0.875rem; background: #f5f5f5; border-radius: 9999px; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 500; color: #737373; }"
+    },
+    {
+      "name": "Social Icon Button",
+      "kind": "button",
+      "refersTo": "social-icon",
+      "description": "Square icon-only link; inverts to solid ink on hover.",
+      "html": "<a class=\"ds-social-btn\" href=\"#\" aria-label=\"GitHub\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49v-1.91c-2.78.62-3.37-1.36-3.37-1.36-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.58 2.34 1.12 2.91.86.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.32.1-2.75 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 5 0c1.9-1.33 2.75-1.05 2.75-1.05.55 1.43.2 2.49.1 2.75.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2z\"/></svg></a>",
+      "css": ".ds-social-btn { display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 0.5rem; background: #f5f5f5; color: #737373; transition: all 0.2s ease; } .ds-social-btn:hover { background: #171717; color: #fafafa; } .ds-social-btn svg { width: 1.25rem; height: 1.25rem; }"
+    },
+    {
+      "name": "Timeline Item",
+      "kind": "custom",
+      "refersTo": "experience-item",
+      "description": "Signature component: bordered rail with a dot marker for each experience entry; rail and dot darken to ink on hover.",
+      "html": "<div class=\"ds-timeline-item\"><div class=\"ds-timeline-header\"><a class=\"ds-timeline-company\" href=\"#\">Company Name</a><span class=\"ds-timeline-badge\">Current</span></div><p class=\"ds-timeline-role\">Software Engineer</p><p class=\"ds-timeline-desc\">Role description goes here.</p></div>",
+      "css": ".ds-timeline-item { position: relative; padding-left: 2rem; padding-bottom: 2.5rem; border-left: 1px solid #e5e5e5; transition: border-color 0.3s ease; } .ds-timeline-item:hover { border-color: #171717; } .ds-timeline-item::before { content: ''; position: absolute; left: 0; top: 0.25rem; width: 9px; height: 9px; border-radius: 50%; background: #fafafa; border: 2px solid #e5e5e5; transform: translateX(-5px); transition: border-color 0.3s ease; } .ds-timeline-item:hover::before { border-color: #171717; } .ds-timeline-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem; } .ds-timeline-company { font-family: 'Inter', sans-serif; font-size: 1.125rem; font-weight: 600; color: #171717; text-decoration: none; } .ds-timeline-company:hover { text-decoration: underline; } .ds-timeline-badge { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.625rem; background: #f5f5f5; border-radius: 9999px; color: #737373; } .ds-timeline-role { font-size: 0.875rem; color: #737373; margin-bottom: 0.75rem; } .ds-timeline-desc { color: #737373; line-height: 1.7; max-width: 600px; }"
+    },
+    {
+      "name": "Code Window",
+      "kind": "custom",
+      "refersTo": "code-window",
+      "description": "Signature component: dark syntax-highlighted panel with traffic-light dots, simulating a typed code snippet. The site's one intentional color moment.",
+      "html": "<div class=\"ds-code-window\"><div class=\"ds-code-header\"><span class=\"ds-code-dot ds-red\"></span><span class=\"ds-code-dot ds-yellow\"></span><span class=\"ds-code-dot ds-green\"></span><span class=\"ds-code-title\">profile.go</span></div><div class=\"ds-code-content\"><div class=\"ds-code-line\"><span class=\"ds-code-keyword\">func</span> <span class=\"ds-code-function\">main</span>() {</div></div></div>",
+      "css": ".ds-code-window { width: 100%; max-width: 480px; background: #1e1e1e; border-radius: 12px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1) inset; } .ds-code-header { display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1rem; background: #2d2d2d; border-bottom: 1px solid #3d3d3d; } .ds-code-dot { width: 12px; height: 12px; border-radius: 50%; } .ds-code-dot.ds-red { background: #ff5f56; } .ds-code-dot.ds-yellow { background: #ffbd2e; } .ds-code-dot.ds-green { background: #27c93f; } .ds-code-title { margin-left: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #888; } .ds-code-content { padding: 1.25rem 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8125rem; line-height: 1.8; color: #d4d4d4; } .ds-code-keyword { color: #569cd6; } .ds-code-function { color: #dcdcaa; }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "custom",
+      "refersTo": "nav-link",
+      "description": "Text-only nav link with an animated underline that grows on hover.",
+      "html": "<a class=\"ds-nav-link\" href=\"#\">About</a>",
+      "css": ".ds-nav-link { text-decoration: none; color: #737373; font-family: 'Inter', sans-serif; font-size: 0.875rem; font-weight: 500; transition: color 0.2s ease; position: relative; } .ds-nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px; background: #171717; transition: width 0.3s ease; } .ds-nav-link:hover { color: #171717; } .ds-nav-link:hover::after { width: 100%; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Default Template",
+    "overview": "This is the current, as-built state of the site — captured honestly, not aspirationally. The system is a grayscale minimal-SaaS portfolio: near-white background, near-black text, one gray step for secondary content, and no accent color at all (--accent is literally the same value as --text-primary). Density is generous, motion is a light fade-up on scroll and load, and structure follows the familiar dev-portfolio template shape (fixed blurred nav → hero → timeline → card grid → footer). Nothing here signals a distinct point of view; it reads as the safe default a generic AI-assisted build lands on, and the site owner has explicitly named this as something to move away from in future work. The one deliberate exception is the hero's animated VS Code-style code window: a dark panel with traffic-light dots and syntax-highlighted, line-by-line 'typing' text. It's the single moment of color and personality in an otherwise monochrome page, and it's confirmed as an intentional signature rather than incidental template filler — future revisions should preserve or evolve it rather than delete it outright.",
+    "keyCharacteristics": [
+      "Grayscale-only surface and text palette; zero accent color in the rest of the UI",
+      "One signature color moment: the dark, VS Code–themed code window in the hero",
+      "Inter for all UI text, JetBrains Mono reserved for code/monospace contexts",
+      "Flat surfaces at rest; shadow appears only on hover as feedback, never as ambient decoration",
+      "Fade-up-on-scroll reveal pattern applied uniformly to every section"
+    ],
+    "rules": [
+      { "name": "The Ink-as-Accent Rule", "body": "There is no accent color distinct from primary text. Emphasis is carried by weight, underline, and border-color shifts on #171717, not by a hue.", "section": "colors" },
+      { "name": "The Flat-at-Rest Rule", "body": "Every surface except the hero code window is shadowless until hovered. Shadow signals interactivity, not decoration.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the code window's dark, syntax-highlighted palette isolated to that one component; it's the system's only sanctioned color.",
+      "Do use ink (#171717) as the sole \"accent\" — hover states, active states, and emphasis all resolve to darkening toward ink, not introducing a new hue.",
+      "Do keep shadows as an interaction response (hover) rather than a resting decoration, except for the code window.",
+      "Do use the 12px radius for card-scale components and pill radius for tag-scale components — don't mix radii within the same component tier."
+    ],
+    "donts": [
+      "Don't add a second accent color without a deliberate decision — right now \"accent\" and \"ink\" are the same token, which is itself worth revisiting rather than patching around.",
+      "Don't treat this file's \"Default Template\" characterization as a target — it names the current gap the site owner wants closed, not a style to preserve.",
+      "Don't introduce shadows or elevation on flat surfaces (tags, badges, nav) to \"add depth\" — depth is reserved for cards-on-hover and the code window.",
+      "Don't carry the mobile nav's current behavior (links vanish with no replacement menu) forward without addressing it — it's an incumbent gap, not a considered decision."
+    ]
+  }
+}
