@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Timothy Lock's home page, 1999 edition. A GeoCities-style easter egg of timlock.dev.">
+<title>Welcome to Timothy Lock's Home Page!! *~* best viewed at 1024x768 *~*</title>
+<style>
+:root{
+  --bg:#000010;
+  --silver:#c0c0c0;
+  --silver-hi:#ffffff;
+  --silver-lo:#6b6b6b;
+  --text:#f5f5ff;
+  --text-dim:#9aa2b8;
+  --link:#0000ee;
+  --visited:#551a8b;
+  --hover:#ff4040;
+  --yellow:#ffff00;
+  --green:#00ff00;
+  --cyan:#00ffff;
+  --magenta:#ff55ff;
+  --orange:#ff8800;
+  --panel:#05050f;
+  --font-impact:Impact,'Arial Black','Franklin Gothic Bold',sans-serif;
+  --font-comic:'Comic Sans MS','Comic Sans','Chalkboard SE','Marker Felt',cursive;
+  --font-verdana:Verdana,Geneva,Tahoma,sans-serif;
+  --font-courier:'Courier New',Courier,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:var(--font-verdana);
+  font-size:13px;line-height:1.55;
+  color:var(--text);
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(1px 1px at 18px 32px,#ffffff 60%,transparent 61%),
+    radial-gradient(1px 1px at 96px 14px,#c9d4ff 60%,transparent 61%),
+    radial-gradient(1px 1px at 150px 64px,#ffffff 60%,transparent 61%),
+    radial-gradient(2px 2px at 208px 22px,#c9d4ff 60%,transparent 61%),
+    radial-gradient(1px 1px at 52px 118px,#9aa2b8 60%,transparent 61%),
+    radial-gradient(1px 1px at 130px 140px,#ffffff 60%,transparent 61%),
+    radial-gradient(1px 1px at 190px 168px,#9aa2b8 60%,transparent 61%),
+    radial-gradient(2px 2px at 30px 188px,#ffd98a 60%,transparent 61%),
+    radial-gradient(1px 1px at 84px 208px,#9aa2b8 60%,transparent 61%),
+    radial-gradient(1px 1px at 170px 100px,#c9d4ff 60%,transparent 61%),
+    radial-gradient(1px 1px at 216px 90px,#ffffff 60%,transparent 61%),
+    radial-gradient(1px 1px at 14px 150px,#9aa2b8 60%,transparent 61%),
+    radial-gradient(1px 1px at 66px 66px,#9aa2b8 60%,transparent 61%),
+    radial-gradient(2px 2px at 120px 10px,#ffffff 60%,transparent 61%),
+    radial-gradient(1px 1px at 210px 196px,#c9d4ff 60%,transparent 61%);
+  background-size:232px 232px;
+  overflow-x:hidden;
+}
+a{color:var(--link);}
+a:visited{color:var(--visited);}
+a:hover{color:var(--hover);}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px dashed var(--yellow);outline-offset:2px;}
+::selection{background:#0000ee;color:#fff;}
+
+.blink{animation:blink 1s step-end infinite;}
+@keyframes blink{0%,55%{opacity:1}56%,100%{opacity:0}}
+
+hr.bevel{border:none;height:2px;background:linear-gradient(#5a5a5a,#d9d9d9);margin:18px 0;}
+hr.groove{border:none;height:2px;background:#404040;margin:10px auto;width:80%;}
+
+/* ---------- marquee ---------- */
+.marquee{overflow:hidden;background:#000;border-bottom:2px solid var(--silver);padding:6px 0;white-space:nowrap;}
+.marquee.bottom{border-bottom:none;border-top:2px solid var(--silver);}
+.marquee-track{display:inline-flex;animation:marq 30s linear infinite;}
+.marquee.bottom .marquee-track{animation-direction:reverse;}
+.marquee-group{display:inline-block;padding-right:60px;font-family:var(--font-comic);font-size:13px;font-weight:bold;letter-spacing:1px;color:var(--green);}
+@keyframes marq{to{transform:translateX(-50%);}}
+
+/* ---------- page frame ---------- */
+.page{width:1024px;max-width:100%;margin:0 auto;padding:22px 12px 0;}
+
+/* ---------- header ---------- */
+.deco{text-align:center;color:#8899bb;font-size:12px;letter-spacing:6px;margin-top:8px;}
+.masthead{text-align:center;padding:18px 0 4px;}
+.masthead h1{
+  font-family:var(--font-impact);
+  font-size:64px;line-height:1;letter-spacing:8px;
+  color:var(--yellow);
+  text-shadow:4px 4px 0 #ff0000,8px 8px 0 #0000ff;
+}
+.welcome{font-family:var(--font-comic);font-size:17px;font-weight:bold;color:#fff;margin-top:16px;letter-spacing:2px;}
+.masthead .sub{margin-top:12px;font-size:15px;color:var(--silver);}
+.masthead .sub .hl{color:var(--cyan);font-weight:bold;}
+
+/* ---------- layout table ---------- */
+.layout-table{width:100%;border-collapse:separate;border-spacing:12px 0;margin-top:6px;}
+.layout-table>tbody>tr>td{vertical-align:top;}
+td.side{width:190px;background:var(--silver);border:2px solid;border-color:var(--silver-hi) var(--silver-lo) var(--silver-lo) var(--silver-hi);padding:10px;color:#000;}
+td.main{padding:0 2px;}
+
+/* ---------- sidebar ---------- */
+.side-label{font-family:var(--font-comic);font-weight:bold;font-size:13px;text-align:center;letter-spacing:2px;padding:4px 0;}
+.btn{
+  display:block;width:100%;
+  font-family:var(--font-verdana);font-size:12px;font-weight:bold;letter-spacing:2px;
+  color:#000;text-decoration:none;text-align:center;
+  background:var(--silver);
+  border:2px solid;border-color:var(--silver-hi) var(--silver-lo) var(--silver-lo) var(--silver-hi);
+  padding:6px 4px;margin-bottom:5px;cursor:pointer;
+}
+.btn:hover{background:#d6d6d6;color:#000;}
+.btn:active{border-color:var(--silver-lo) var(--silver-hi) var(--silver-hi) var(--silver-lo);background:#b4b4b4;transform:translate(1px,1px);}
+.counter-box{background:#000;border:2px solid;border-color:var(--silver-lo) var(--silver-hi) var(--silver-hi) var(--silver-lo);padding:8px;margin:6px 0;text-align:center;}
+.counter-label{font-size:10px;font-weight:bold;letter-spacing:1px;color:#000;display:block;margin-bottom:4px;}
+.digits{display:inline-flex;gap:1px;}
+.digit{display:inline-block;width:15px;padding:1px 0;background:#0a0a0a;border:1px solid #333;color:var(--green);font-family:var(--font-courier);font-size:15px;font-weight:bold;text-align:center;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:bold;padding:3px 2px;}
+.stat-row .digits .digit{font-size:13px;width:13px;}
+.badge-col{text-align:center;margin:8px 0;}
+.badge88{width:88px;height:31px;margin:4px auto;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;font-weight:bold;line-height:1.2;border:2px solid;letter-spacing:.5px;}
+.badge88.b1{background:#000;color:#fff;border-color:#00c;}
+.badge88.b1 .alt{color:#55f;}
+.badge88.b2{background:#000;color:var(--green);border-color:#0a0;}
+.badge88.b3{background:#fff;color:#000;border-color:#666;}
+.news{font-size:10px;padding:4px 2px;line-height:1.4;}
+.news b{letter-spacing:1px;}
+
+/* ---------- sections ---------- */
+section{padding:14px 0 6px;}
+.sec-title{font-family:var(--font-comic);font-size:22px;font-weight:bold;letter-spacing:1px;margin-bottom:6px;}
+.sec-title.c-yellow{color:var(--yellow);}
+.sec-title.c-green{color:var(--green);}
+.sec-title.c-cyan{color:var(--cyan);}
+.sec-title.c-magenta{color:var(--magenta);}
+.sec-title.c-orange{color:var(--orange);}
+.sec-note{color:var(--text-dim);font-size:12px;margin:-2px 0 12px;}
+
+/* about */
+.about-table{width:100%;border-collapse:separate;border-spacing:14px 0;}
+.about-table>tbody>tr>td{vertical-align:top;}
+.about-text .hi{font-family:var(--font-comic);font-size:17px;font-weight:bold;color:#fff;margin-bottom:10px;}
+.about-text p{margin-bottom:10px;}
+.social-row{margin:14px 0;}
+.social-row a{font-family:var(--font-courier);font-size:13px;font-weight:bold;margin-right:14px;}
+.btn-yellow{
+  display:inline-block;
+  font-family:var(--font-comic);font-size:14px;font-weight:bold;letter-spacing:1px;
+  color:#000;text-decoration:none;
+  background:var(--yellow);
+  border:3px solid;border-color:#ffffcc #808000 #808000 #ffffcc;
+  padding:9px 18px;cursor:pointer;
+}
+.btn-yellow:hover{background:#ffff66;color:#000;}
+.btn-yellow:active{border-color:#808000 #ffffcc #ffffcc #808000;transform:translate(1px,1px);}
+
+/* code window */
+.codebox{border:2px solid;border-color:var(--silver-lo) var(--silver-hi) var(--silver-hi) var(--silver-lo);background:#000;max-width:470px;}
+.code-titlebar{display:flex;justify-content:space-between;align-items:center;background:#000080;color:#fff;font-size:11px;padding:3px 6px;font-weight:bold;}
+.code-btns{display:flex;gap:2px;}
+.code-btns span{width:12px;height:12px;background:var(--silver);border:1px solid;border-color:var(--silver-hi) var(--silver-lo) var(--silver-lo) var(--silver-hi);display:inline-block;}
+.code-body{font-family:var(--font-courier);font-size:13px;line-height:1.55;color:#d4d4d4;padding:10px 12px;overflow-x:auto;}
+.ck{color:#66ccff;} .ct{color:#ffcc66;} .cs{color:#66ff66;} .cf{color:#ff66cc;} .cc{color:#888888;}
+.block-cursor{display:inline-block;width:9px;height:14px;background:#d4d4d4;vertical-align:text-bottom;margin-left:2px;animation:blink 1s step-end infinite;}
+.code-caption{font-size:11px;color:var(--text-dim);margin-top:6px;}
+
+/* skills */
+.skills-panel{border:2px solid;border-color:var(--silver-lo) var(--silver-hi) var(--silver-hi) var(--silver-lo);background:var(--panel);padding:12px 14px;}
+.skills-table{width:100%;border-collapse:collapse;}
+.skills-table td{padding:2px 14px 2px 0;font-size:12px;vertical-align:top;}
+.skills-table .sname{font-weight:bold;color:var(--silver);width:45%;}
+.skills-table .sbar{font-family:var(--font-courier);color:var(--green);white-space:pre;}
+.skills-legend{font-size:11px;color:var(--text-dim);margin-top:10px;}
+
+/* experience */
+.scrollwrap{overflow-x:auto;}
+.xp-table{width:100%;border-collapse:collapse;font-size:12px;min-width:640px;}
+.xp-table th{background:var(--silver);color:#000;font-size:11px;letter-spacing:1px;text-align:left;padding:6px 8px;border:1px solid #808080;}
+.xp-table td{border:1px solid #808080;padding:8px 10px;vertical-align:top;background:#05050f;color:var(--text);}
+.xp-table tr:nth-child(even) td{background:#0a0a18;}
+.xp-table .co{font-family:var(--font-comic);font-weight:bold;font-size:13px;}
+.xp-table .role{color:var(--silver);}
+.xp-table .dates{font-family:var(--font-courier);font-size:12px;color:var(--text-dim);white-space:nowrap;}
+.here{color:var(--green);font-weight:bold;white-space:nowrap;}
+
+/* projects */
+.proj-table{width:100%;border-collapse:separate;border-spacing:14px 0;}
+.proj-table>tbody>tr>td{vertical-align:top;width:50%;}
+.proj{border:2px solid;border-color:var(--silver-lo) var(--silver-hi) var(--silver-hi) var(--silver-lo);background:var(--panel);padding:14px;}
+.proj-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px;}
+.proj h3{font-family:var(--font-comic);font-size:16px;font-weight:bold;letter-spacing:.5px;}
+.proj h3.p1{color:var(--cyan);}
+.proj h3.p2{color:var(--yellow);}
+.newbadge{font-family:var(--font-comic);font-size:11px;font-weight:bold;color:#000;background:var(--green);padding:1px 6px;white-space:nowrap;}
+.proj p{font-size:12px;margin-bottom:10px;}
+.proj-tags{font-family:var(--font-courier);font-size:11px;color:var(--cyan);margin-bottom:12px;}
+.stars-line{font-family:var(--font-courier);font-size:12px;color:var(--green);margin-bottom:10px;}
+.stars-line .digit{font-size:13px;width:14px;}
+.proj a.visit{font-family:var(--font-comic);font-weight:bold;font-size:13px;}
+
+/* guestbook */
+.gb{border:2px solid;border-color:var(--silver-lo) var(--silver-hi) var(--silver-hi) var(--silver-lo);background:var(--panel);padding:14px;}
+.gb-list{list-style:none;margin-bottom:14px;}
+.gb-list li{padding:7px 10px;border:1px solid #333;background:#0a0a18;margin-bottom:5px;font-size:12px;}
+.gb-list li.fresh{background:#1a1a08;border-color:var(--yellow);}
+.gb-list .who{font-family:var(--font-comic);font-weight:bold;color:var(--cyan);}
+.gb-list .when{font-family:var(--font-courier);font-size:11px;color:var(--text-dim);}
+.gb-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.gb-form input{font-family:var(--font-verdana);font-size:12px;background:#fff;color:#000;border:2px solid;border-color:var(--silver-lo) var(--silver-hi) var(--silver-hi) var(--silver-lo);padding:5px 8px;}
+.gb-form input[name=guest]{width:130px;}
+.gb-form input[name=message]{flex:1;min-width:200px;}
+.gb-form .btn{width:auto;margin:0;padding:5px 14px;}
+
+/* footer */
+footer{padding:20px 0 26px;text-align:center;}
+.f-copy{font-size:12px;color:var(--silver);margin-bottom:10px;}
+.f-links a{font-family:var(--font-courier);font-size:12px;font-weight:bold;margin:0 8px;}
+.f-small{font-size:10px;color:var(--text-dim);margin-top:10px;line-height:1.6;}
+.f-back{margin-top:12px;}
+.f-back a{font-family:var(--font-comic);font-size:12px;font-weight:bold;}
+
+/* cursor trail */
+.crt-trail{position:fixed;z-index:9999;pointer-events:none;user-select:none;text-shadow:0 0 5px currentColor;animation:trail .7s ease-out forwards;}
+@keyframes trail{
+  from{opacity:.9;transform:translate(0,0) scale(1);}
+  to{opacity:0;transform:translate(var(--dx,4px),var(--dy,12px)) scale(.35);}
+}
+
+/* stacked layout on narrow screens */
+@media (max-width:900px){
+  .layout-table,.about-table,.proj-table,.layout-table tbody,.layout-table tr,.about-table tbody,.about-table tr,.proj-table tbody,.proj-table tr{display:block;}
+  .layout-table td,.about-table td,.proj-table td{display:block;width:100% !important;margin-bottom:12px;}
+  .masthead h1{font-size:40px;letter-spacing:5px;text-shadow:3px 3px 0 #ff0000,6px 6px 0 #0000ff;}
+  .codebox{max-width:100%;}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  .blink,.block-cursor{animation:none;}
+  .marquee-track{animation:none;}
+  .crt-trail{display:none;}
+  .btn:active,.btn-yellow:active{transform:none;}
+}
+</style>
+</head>
+<body>
+<!--
+impeccable:direction retro.html
+THESIS: A 1999 GeoCities home page that carries 2026 proof — the whole portfolio re-skinned in full retro (starfield, bevels, marquees, counters), orderly like a real homepage; refuses retro-as-accent pasted onto a modern layout.
+OWN-WORLD: near-black starfield tile; silver #c0c0c0 raised/sunken bevels; Impact name with layered color shadows, Comic Sans MS headings, Verdana 12-13px body, Courier New for code/counters/ASCII meters; link blue #0000ee, hover red #ff0000, visited #551a8b; accents #ffff00 #00ff00 #00ffff; beveled hr; 88x31 badges.
+STORY: visitor lands on marquee + name, reads About + main.go, scrolls Experience table and Projects, signs the guestbook, grabs the resume; the joke is the skin, the facts are the real thing.
+FIRST VIEWPORT: top marquee; Impact "TIMOTHY LOCK" centered with blinking welcome; two-column table (silver nav sidebar | About with code window); primary action = yellow RESUME button in About.
+FORM: user-pinned brief (full-page GeoCities, 1024, marquee + blink + cursor trail, no chaos); no concept roll — precisely specified.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-group">★ WELCOME TO TIMOTHY LOCK'S HOME PAGE ★ BACKEND & PLATFORM ENGINEER @ ELECTRONIC ARTS ★ BUILT WITH NOTEPAD IN SEATTLE ★ BEST VIEWED AT 1024 x 768 ★</span>
+    <span class="marquee-group">★ WELCOME TO TIMOTHY LOCK'S HOME PAGE ★ BACKEND & PLATFORM ENGINEER @ ELECTRONIC ARTS ★ BUILT WITH NOTEPAD IN SEATTLE ★ BEST VIEWED AT 1024 x 768 ★</span>
+  </div>
+</div>
+
+<div class="page">
+  <div class="deco" aria-hidden="true">*~*~*~*~*~*~*~*~*~*~*~*</div>
+
+  <header class="masthead">
+    <h1>TIMOTHY LOCK</h1>
+    <p class="welcome blink">★ WELCOME TO MY HOME PAGE ★</p>
+    <p class="sub">Backend & Platform Engineer at <span class="hl">Electronic Arts</span> · Seattle, WA</p>
+  </header>
+
+  <hr class="bevel">
+
+  <table class="layout-table" cellspacing="0" cellpadding="0" role="presentation">
+    <tbody>
+      <tr>
+        <td class="side">
+          <p class="side-label">SITE MENU</p>
+          <a class="btn" href="#about">► ABOUT</a>
+          <a class="btn" href="#skills">► SKILLS</a>
+          <a class="btn" href="#experience">► EXPERIENCE</a>
+          <a class="btn" href="#projects">► PROJECTS</a>
+          <a class="btn" href="#guestbook">► GUESTBOOK</a>
+          <a class="btn" href="timothy_lock_resume.pdf" target="_blank">▼ RESUME (PDF)</a>
+          <hr class="groove">
+          <div class="counter-box">
+            <span class="counter-label">VISITORS</span>
+            <span class="digits" id="hit-counter" aria-label="visitor counter"></span>
+          </div>
+          <p class="stat-row"><span>TIME ON PAGE</span><span class="digits" id="time-on-page" aria-hidden="true"></span></p>
+          <div class="badge-col">
+            <div class="badge88 b1">BEST VIEWED<span class="alt">1024 x 768</span></div>
+            <div class="badge88 b2">MADE WITH<span>NOTEPAD.EXE</span></div>
+            <div class="badge88 b3">VALID<span>HTML 4.0</span></div>
+          </div>
+          <hr class="groove">
+          <p class="side-label">NEWS</p>
+          <p class="news"><b><span id="news-date">--/--/----</span></b> — This page is an easter egg. Every fact on it is real.</p>
+        </td>
+
+        <td class="main">
+          <!-- ABOUT -->
+          <section id="about">
+            <h2 class="sec-title c-yellow">► ABOUT ME</h2>
+            <hr class="bevel">
+            <table class="about-table" cellspacing="0" cellpadding="0" role="presentation">
+              <tbody>
+                <tr>
+                  <td class="about-text">
+                    <p class="hi">Hi, I'm Timothy Lock!</p>
+                    <p>I build reliable backend systems, Kubernetes platforms, and cloud infrastructure for products used at scale.</p>
+                    <div class="social-row">
+                      <a href="https://github.com/timothylock" target="_blank">[ GITHUB ]</a>
+                      <a href="https://linkedin.com/in/timothylock/" target="_blank">[ LINKEDIN ]</a>
+                      <a href="https://www.instagram.com/timtakessomephotos/" target="_blank">[ INSTAGRAM ]</a>
+                    </div>
+                    <a class="btn-yellow" href="timothy_lock_resume.pdf" target="_blank">▼ DOWNLOAD MY RESUME (PDF)</a>
+                  </td>
+                  <td>
+                    <div class="codebox">
+                      <div class="code-titlebar">
+                        <span>C:\TIM\MAIN.GO — Notepad</span>
+                        <span class="code-btns" aria-hidden="true"><span></span><span></span><span></span></span>
+                      </div>
+                      <div class="code-body">
+<span><span class="ck">package</span> main</span><br>
+<br>
+<span><span class="ck">type</span> <span class="ct">Engineer</span> <span class="ck">struct</span> {</span><br>
+<span>  Name    <span class="ct">string</span></span><br>
+<span>  Company  <span class="ct">string</span></span><br>
+<span>  Location <span class="ct">string</span></span><br>
+<span>}</span><br>
+<br>
+<span><span class="ck">func</span> <span class="cf">main</span>() {</span><br>
+<span>  tim := <span class="ct">Engineer</span>{</span><br>
+<span>    Name:    <span class="cs">"Timothy Lock"</span>,</span><br>
+<span>    Company:  <span class="cs">"Electronic Arts"</span>,</span><br>
+<span>    Location: <span class="cs">"Seattle"</span>,</span><br>
+<span>  }</span><br>
+<span>}<span class="block-cursor" aria-hidden="true"></span></span>
+                      </div>
+                    </div>
+                    <p class="code-caption">* yes, I still open files in Notepad sometimes. no, I don't.</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- SKILLS -->
+          <section id="skills">
+            <h2 class="sec-title c-green">► MY SKILLS</h2>
+            <p class="sec-note">honest self-assessment, on a scale of 1 to 10, rendered in genuine ASCII</p>
+            <div class="skills-panel">
+              <table class="skills-table" role="presentation">
+                <tr><td class="sname">Go / Golang</td><td class="sbar">[██████████] 10/10</td><td class="sname">Distributed Systems</td><td class="sbar">[█████████░] 9/10</td></tr>
+                <tr><td class="sname">Kubernetes</td><td class="sbar">[█████████░] 9/10</td><td class="sname">REST APIs</td><td class="sbar">[██████████] 10/10</td></tr>
+                <tr><td class="sname">Docker</td><td class="sbar">[█████████░] 9/10</td><td class="sname">SQL</td><td class="sbar">[████████░░] 8/10</td></tr>
+                <tr><td class="sname">Terraform</td><td class="sbar">[████████░░] 8/10</td><td class="sname">Redis</td><td class="sbar">[████████░░] 8/10</td></tr>
+                <tr><td class="sname">AWS</td><td class="sbar">[█████████░] 9/10</td><td class="sname">CI/CD</td><td class="sbar">[█████████░] 9/10</td></tr>
+                <tr><td class="sname">GCP</td><td class="sbar">[████████░░] 8/10</td><td class="sname">Argo CD</td><td class="sbar">[████████░░] 8/10</td></tr>
+                <tr><td class="sname">Azure</td><td class="sbar">[███████░░░] 7/10</td><td class="sname">GitOps</td><td class="sbar">[█████████░] 9/10</td></tr>
+                <tr><td class="sname">Microservices</td><td class="sbar">[██████████] 10/10</td><td class="sname">Helm</td><td class="sbar">[████████░░] 8/10</td></tr>
+                <tr><td class="sname">Platform Engineering</td><td class="sbar">[██████████] 10/10</td><td class="sname">Observability</td><td class="sbar">[████████░░] 8/10</td></tr>
+                <tr><td class="sname">API Gateway</td><td class="sbar">[█████████░] 9/10</td><td class="sname">AIOps</td><td class="sbar">[███████░░░] 7/10</td></tr>
+                <tr><td class="sname">Incident Response</td><td class="sbar">[████████░░] 8/10</td><td class="sname"></td><td class="sbar"></td></tr>
+              </table>
+              <p class="skills-legend">* meters updated as often as my dial-up connection allowed. (frequently)</p>
+            </div>
+          </section>
+
+          <!-- EXPERIENCE -->
+          <section id="experience">
+            <h2 class="sec-title c-cyan">► MY EXPERIENCE</h2>
+            <hr class="bevel">
+            <div class="scrollwrap">
+              <table class="xp-table">
+                <thead>
+                  <tr><th style="width:110px;">DATES</th><th style="width:160px;">COMPANY</th><th style="width:220px;">ROLE</th><th>WHAT I DID</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="dates">Oct 2023 – Present<br><span class="here blink">► CURRENT</span></td>
+                    <td><a href="https://ea.com" target="_blank" class="co">Electronic Arts</a></td>
+                    <td class="role">Software Engineer<br>Platform Engineering</td>
+                    <td>Building next-generation Kubernetes operators in Go to automate cloud infrastructure across AWS, GCP, Azure, and on-prem clusters that power online services for millions of players.</td>
+                  </tr>
+                  <tr>
+                    <td class="dates">Sep 2021 – Oct 2023</td>
+                    <td><a href="https://splashthat.com" target="_blank" class="co">Splashthat (now Cvent)</a></td>
+                    <td class="role">Software Engineer<br>Backend & APIs</td>
+                    <td>Rebuilt authentication and API gateway infrastructure handling 100% of platform traffic; developed Go microservices, REST APIs, intelligent rate limiting, SQL performance improvements, and Salesforce, Marketo, and HubSpot integrations.</td>
+                  </tr>
+                  <tr>
+                    <td class="dates">Jun 2019 – Sep 2021</td>
+                    <td><a href="https://wattpad.com" target="_blank" class="co">Wattpad</a></td>
+                    <td class="role">Software Engineer<br>Backend & Distributed Systems</td>
+                    <td>Built distributed backend microservices serving 90 million users and 80,000+ requests per second using Go, Redis, MySQL, and Amazon Aurora; created image moderation systems processing 3M+ images monthly.</td>
+                  </tr>
+                  <tr>
+                    <td class="dates">—</td>
+                    <td><a href="https://www.utoronto.ca/" target="_blank" class="co">University of Toronto</a></td>
+                    <td class="role">Computer Science<br>Software Engineering & Distributed Systems</td>
+                    <td>Earned an Honours Bachelor of Science in Computer Science with a focus on software engineering and distributed systems.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- PROJECTS -->
+          <section id="projects">
+            <h2 class="sec-title c-magenta">► MY PROJECTS</h2>
+            <p class="sec-note">things I've built in my spare time</p>
+            <table class="proj-table" cellspacing="0" cellpadding="0" role="presentation">
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="proj">
+                      <div class="proj-head">
+                        <h3 class="p1">Go Sign in with Apple</h3>
+                      </div>
+                      <p>A Go library for Apple's Sign in with Apple REST API, including token validation, claims parsing, user migration, and server event handling.</p>
+                      <p class="proj-tags">[ Go ] [ Library ] [ Open Source ]</p>
+                      <p class="stars-line">GITHUB STARS: <span class="digits" id="stars-count"><span class="digit">?</span><span class="digit">?</span></span></p>
+                      <a class="visit" href="https://github.com/timothylock/go-signin-with-apple" target="_blank">► VIEW ON GITHUB</a>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="proj">
+                      <div class="proj-head">
+                        <h3 class="p2">PokeBinder</h3>
+                        <span class="newbadge blink">NEW!</span>
+                      </div>
+                      <p>Pokémon card collection tracking with scanning workflows and live price history.</p>
+                      <p class="proj-tags">[ Go ] [ React ]</p>
+                      <a class="visit" href="https://pokebinder.net" target="_blank">► VISIT THE SITE</a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- GUESTBOOK -->
+          <section id="guestbook">
+            <h2 class="sec-title c-orange">► SIGN MY GUESTBOOK</h2>
+            <hr class="bevel">
+            <div class="gb">
+              <ul class="gb-list" id="gb-list"></ul>
+              <form class="gb-form" id="gb-form">
+                <input type="text" name="guest" maxlength="24" placeholder="ur name" aria-label="your name">
+                <input type="text" name="message" maxlength="140" placeholder="say something nice (140 chars, like a tweet)" aria-label="your message">
+                <button type="submit" class="btn">SIGN IT</button>
+              </form>
+            </div>
+          </section>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="bevel">
+
+  <footer>
+    <p class="f-copy">© 1999–<span id="year">2026</span> Timothy Lock · Made with care in Seattle</p>
+    <p class="f-links">
+      <a href="https://github.com/timothylock" target="_blank">[ GITHUB ]</a>
+      <a href="https://linkedin.com/in/timothylock/" target="_blank">[ LINKEDIN ]</a>
+      <a href="https://www.instagram.com/timtakessomephotos/" target="_blank">[ INSTAGRAM ]</a>
+      <a href="timothy_lock_resume.pdf" target="_blank">[ RESUME ]</a>
+    </p>
+    <p class="f-small">
+      LAST UPDATED: <span id="last-updated">--/--/----</span> · this site is best viewed at 1024 x 768 · the 56k modem in all of us<br>
+      “please sign the guestbook on your way out”
+    </p>
+    <p class="f-back"><a href="index.html">« BACK TO THE 2026 VERSION »</a></p>
+  </footer>
+</div>
+
+<div class="marquee bottom" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-group">THANKS FOR VISITING ★ DROP A SIGNATURE IN THE GUESTBOOK ★ TELL YOUR FRIENDS ★ Y2K? WHAT Y2K? ★</span>
+    <span class="marquee-group">THANKS FOR VISITING ★ DROP A SIGNATURE IN THE GUESTBOOK ★ TELL YOUR FRIENDS ★ Y2K? WHAT Y2K? ★</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function store() { try { return window.localStorage; } catch (e) { return null; } }
+  var S = store();
+
+  // dates
+  var now = new Date();
+  var stamp = pad2(now.getMonth() + 1) + '/' + pad2(now.getDate()) + '/' + now.getFullYear();
+  document.getElementById('year').textContent = now.getFullYear();
+  document.getElementById('last-updated').textContent = stamp;
+  document.getElementById('news-date').textContent = stamp;
+
+  // hit counter
+  var CKEY = 'tl_retro_visits';
+  var count = 13370;
+  try {
+    var v = parseInt(S ? S.getItem(CKEY) : '0', 10) || 0;
+    v += 1;
+    if (S) S.setItem(CKEY, String(v));
+    count = 13370 + v;
+  } catch (e) { count = 13371 + Math.floor(Math.random() * 40); }
+  var cbox = document.getElementById('hit-counter');
+  var cs = String(count).length > 6 ? String(count).slice(-6) : ('000000' + String(count)).slice(-6);
+  for (var i = 0; i < 6; i++) {
+    var d = document.createElement('span');
+    d.className = 'digit';
+    d.textContent = cs.charAt(i);
+    cbox.appendChild(d);
+  }
+
+  // time on page
+  var t0 = Date.now();
+  var tel = document.getElementById('time-on-page');
+  function renderTime() {
+    var s = Math.floor((Date.now() - t0) / 1000);
+    tel.innerHTML = '<span class="digit">' + pad2(Math.floor(s / 60)) + '</span><span class="digit">' + pad2(s % 60) + '</span>';
+  }
+  renderTime();
+  setInterval(renderTime, 1000);
+
+  // cursor trail
+  var COLORS = ['#ffff00', '#00ffff', '#ff00ff', '#00ff00', '#ffffff', '#ff8800'];
+  var lastMove = 0;
+  document.addEventListener('mousemove', function (e) {
+    if (reduced) return;
+    var t = performance.now();
+    if (t - lastMove < 28) return;
+    lastMove = t;
+    var live = document.getElementsByClassName('crt-trail');
+    if (live.length > 36) live[0].remove();
+    var el = document.createElement('span');
+    el.className = 'crt-trail';
+    el.textContent = '\u2726';
+    el.style.left = e.clientX + 'px';
+    el.style.top = e.clientY + 'px';
+    el.style.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    el.style.fontSize = (9 + Math.floor(Math.random() * 9)) + 'px';
+    el.style.setProperty('--dx', Math.floor(Math.random() * 16 - 8) + 'px');
+    el.style.setProperty('--dy', (6 + Math.floor(Math.random() * 10)) + 'px');
+    document.body.appendChild(el);
+    el.addEventListener('animationend', function () { el.remove(); });
+  });
+
+  // guestbook
+  var GKEY = 'tl_retro_guestbook';
+  var SEED = [
+    { who: 'xX_Dave_Xx', when: '01/01/2000', msg: 'FIRST SIGNATURE!!! cool page dude, the code window gets me' },
+    { who: 'Jenny', when: '06/15/2001', msg: 'found ur site thru the webring. 56k approved' },
+    { who: 'anon', when: '03/03/2016', msg: 'still up?? impressive. the modem remembers' }
+  ];
+  function gbLoad() {
+    try {
+      var raw = S ? S.getItem(GKEY) : null;
+      var arr = raw ? JSON.parse(raw) : null;
+      return (arr && arr.length) ? arr : SEED.slice();
+    } catch (e) { return SEED.slice(); }
+  }
+  var gbList = document.getElementById('gb-list');
+  function gbRender(freshIndex) {
+    var entries = gbLoad();
+    gbList.innerHTML = '';
+    entries.slice(-4).reverse().forEach(function (en) {
+      var li = document.createElement('li');
+      if (freshIndex === entries.indexOf(en)) li.className = 'fresh';
+      var who = document.createElement('span');
+      who.className = 'who';
+      who.textContent = en.who;
+      var when = document.createElement('span');
+      when.className = 'when';
+      when.textContent = ' (' + en.when + ')';
+      var msg = document.createElement('span');
+      msg.textContent = ' \u2014 ' + en.msg;
+      li.appendChild(who);
+      li.appendChild(when);
+      li.appendChild(msg);
+      gbList.appendChild(li);
+    });
+  }
+  gbRender();
+  document.getElementById('gb-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var f = e.target;
+    var name = f.elements.namedItem('guest').value.replace(/\s+/g, ' ').trim();
+    var msg = f.elements.namedItem('message').value.trim();
+    if (!name || !msg) return;
+    var entries = gbLoad();
+    var idx = entries.length;
+    entries.push({ who: name, when: stamp, msg: msg });
+    if (entries.length > 24) entries = entries.slice(-24);
+    try { if (S) S.setItem(GKEY, JSON.stringify(entries)); } catch (err) {}
+    gbRender(idx);
+    f.reset();
+  });
+
+  // github stars
+  fetch('https://api.github.com/repos/timothylock/go-signin-with-apple')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      var el = document.getElementById('stars-count');
+      if (d && typeof d.stargazers_count === 'number') {
+        var s = String(d.stargazers_count);
+        el.innerHTML = '';
+        for (var i = 0; i < s.length; i++) {
+          var dd = document.createElement('span');
+          dd.className = 'digit';
+          dd.textContent = s.charAt(i);
+          el.appendChild(dd);
+        }
+      } else {
+        el.innerHTML = '<span class="digit">?</span><span class="digit">?</span>';
+      }
+    })
+    .catch(function () {
+      document.getElementById('stars-count').innerHTML = '<span class="digit">?</span><span class="digit">?</span>';
+    });
+})();
+</script>
+</body>
+</html>
